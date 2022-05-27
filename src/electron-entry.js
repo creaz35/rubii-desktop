@@ -7,8 +7,8 @@ let win;
 function createWindow() {
     win = new BrowserWindow({width: 800, height: 600});
 
-    win.loadURL('http://localhost:3000');
-
+    win.loadURL('https://desktop.rubii.com');
+    // http://localhost:3000
     // win.webContents.openDevTools();
 
     win.on('close', function() {
