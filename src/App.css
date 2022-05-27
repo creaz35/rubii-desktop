@@ -1,58 +1,113 @@
-.App ul {
-  list-style-type: none;
+.mt-10 { margin-top: 10px; }
+.mt-20 { margin-top: 20px !important; }
+a {
+  color: #f57670;
+  text-decoration: none;
+}
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.forgot-password {
+  color: #f57670;
 }
 
-.App ul li {
+.forgot-password a {
+  color: #f57670 !important;
+  text-decoration: none !important;
+}
+
+.login {
+  font-family: sans-serif;
   display: flex;
-  justify-content: space-between;
-  padding: 0 27px;
-  line-height: 44px;
-  border-bottom: 1px solid #d6d6d6;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  height: 100vh;
+  background-color: #fff;
+  font-size: 15px;
 }
 
-.App ul li button {
-  margin: 4px;
-  border-radius: 3px;
-  width: 32px;
-  height: 35px;
-  font-size: 14px;
+input[type="text"],
+input[type="password"] {
+  height: 25px;
+  background: #edeef2;
+  outline: none;
+  border: 0px !important;
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  width: 325px;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #000;
+}
+
+input[type="submit"] {
+  margin-top: 10px;
+  cursor: pointer;
+  background: #f57670;
+  border: 1px solid #f57670;
   color: #fff;
-  box-shadow: 1px 1px 11px #c3c3c3;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  width: 150px;
+  margin-top: 30px;
 }
 
-button.delete {
-  background: rgb(248, 44, 44);
-  border: 1px solid rgb(255, 0, 0);
+input[type="submit"]:hover {
+  background: #fff;
+  border-color: #f57670;
+  color: #f57670;
 }
 
-button.complete {
-  background: #03A9F4;
-  border: 1px solid #2196F3;
-}
-
-.create-todo {
+.button-container {
   display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid #9E9E9E;
-  padding: 13px 30px;
-  box-shadow: 1px 1px 9px #d2d2d2;
+  justify-content: center;
 }
 
-.create-todo input {
-  height: 34px;
-  font-size: 18px;
-  padding-left: 11px;
-  border-radius: 3px;
-  border: 1px solid rgba(183, 183, 183, .52);
-  width: 80%;
+.login-form {
+  background-color: white;
+  padding: 2rem;
 }
 
-.create-todo button {
-  width: 14%;
-  font-size: 18px;
-  color: #fff;
-  font-weight: 900;
-  background: #03a9f4;
-  border: 1px solid #007bff;
-  border-radius: 4px;
+.list-container {
+  display: flex;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+}
+
+.title {
+  font-size: 25px;
+  margin-bottom: 20px;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px;
+}
+
+.extra-buttons {
+  display: flex;
+  margin-left: 8px;
+}
+
+.extra-buttons > div {
+  background-color: #fff;
+  width: 50%;
+  margin: 10px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.logo {
+  width: 150px;
+  margin: 0px auto;
+  display: block;
+  margin-bottom: 60px;
 }
