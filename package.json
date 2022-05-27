@@ -31,7 +31,7 @@
     "copyright": "Copyright © 2022 Rubii",
     "mac": {
       "icon": "./public/icons/mac/icon.icns",    
-      "category": "public.app-category.utilities"
+      "target": "pkg"
     },
     "win": {
       "icon": "./public/icons/png/256x256.png"
