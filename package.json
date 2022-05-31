@@ -4,6 +4,7 @@
   "private": true,
   "main": "./src/electron-entry.js",
   "dependencies": {
+    "env-cmd": "^10.1.0",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
     "react-scripts": "1.1.1"
@@ -30,7 +31,7 @@
     "productName": "Rubii",
     "copyright": "Copyright © 2022 Rubii",
     "mac": {
-      "icon": "./public/icons/mac/icon.icns",    
+      "icon": "./public/icons/mac/icon.icns",
       "target": "pkg"
     },
     "win": {
