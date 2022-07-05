@@ -17,6 +17,8 @@
 .env.test.local
 .env.production.local
 
+/src/img/screenshots/*
+
 electron-builder.yml
 npm-debug.log*
 yarn-debug.log*
