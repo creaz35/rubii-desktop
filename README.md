@@ -19,8 +19,15 @@ npm run electron
 to create an executable DMG or EXE file
 ```
 npm run dist
+"build": "react-scripts build",
+Now
+"build": "electron-builder build --mac --win --publish never"
 
 # Then checkout your dist/ to see the .dmg file
 ```
+
+#new
+npm start
+npm run start-electron
 
 Brian :)

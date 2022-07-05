@@ -1,17 +1,35 @@
 {
   "name": "rubii",
-  "version": "0.1.0",
+  "author": "Brian Millot",
+  "description": "Rubii Desktop App",
+  "version": "1.0.0",
   "private": true,
   "main": "./src/electron-entry.js",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/creaz35/rubii-desktop.git"
+  },
   "dependencies": {
+    "active-win": "^7.7.2",
+    "bookmark-parser": "^0.1.6",
+    "electron-active-window": "^0.0.6",
+    "electron-is-dev": "^2.0.0",
+    "electron-log": "^4.4.8",
     "env-cmd": "^10.1.0",
+    "iconv": "^3.0.1",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
-    "react-scripts": "1.1.1"
+    "react-scripts": "1.1.1",
+    "save": "^2.5.0",
+    "uiohook-napi": "^1.2.0",
+    "update-electron-app": "^2.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "set BROWSER=none && react-scripts start",
+    "start-electron": "set NODE_ENV=true && electron .",
+    "rebuild": "electron-rebuild",
+    "build": "electron-builder build --win --publish never",
+    "deploy": "electron-builder build --win --publish always",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "electron .",
@@ -23,8 +41,9 @@
   },
   "devDependencies": {
     "axios": "^0.18.0",
-    "electron": "^1.8.4",
-    "electron-builder": "^20.8.1"
+    "electron": "^19.0.1",
+    "electron-builder": "^20.8.1",
+    "electron-rebuild": "^3.2.7"
   },
   "build": {
     "appId": "rubii",
