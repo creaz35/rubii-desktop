@@ -10,6 +10,7 @@
     "url" : "https://github.com/creaz35/rubii-desktop.git"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "active-win": "^7.7.2",
     "bookmark-parser": "^0.1.6",
     "electron-active-window": "^0.0.6",
