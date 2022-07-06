@@ -38,7 +38,8 @@
     "dist": "build",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win",
-    "dist:all": "electron-builder -mw"
+    "dist:all": "electron-builder -mw",
+    "build-react": "react-scripts build"
   },
   "devDependencies": {
     "axios": "^0.18.0",
