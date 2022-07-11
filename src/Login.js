@@ -176,6 +176,7 @@ function Login() {
 
           console.log(sessionTimer);
           console.log(sessionTimer.timer);
+          console.log('ah');
 
           if(sessionTimer.timer == 0 || sessionTimer.company_id == null || sessionTimer.company_id == '') {
             console.log('triggered issue');
