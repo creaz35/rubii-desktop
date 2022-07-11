@@ -26,6 +26,8 @@ const headers = {
 }
 const sessionUser = null;
 
+app.disableHardwareAcceleration();
+
 require('update-electron-app')({
     repo: 'creaz35/rubii-desktop',
     updateInterval: '1 hour',
@@ -74,9 +76,9 @@ async function takeScreenshot() {
 
         if(timer.timer == 1) {
 
-            console.log('Gathering screens...');
+            //console.log('Gathering screens...');
 
-            console.log(app.getPath('pictures'));
+            //console.log(app.getPath('pictures'));
             const thumbSize = determineScreenShotSize();
             const workaroundTimestamp = Date.now();
 
@@ -86,11 +88,11 @@ async function takeScreenshot() {
             };
 
             desktopCapturer.getSources(options).then((sources) => {
-                console.log('Sources received:'+sources.length);
+                //console.log('Sources received:'+sources.length);
 
                 sources.forEach(function (source) {
                     const sourceName = source.name.toLowerCase();
-                    console.log(sourceName);
+                    //console.log(sourceName);
                     if ( ['entire screen', 'screen 1'].includes(sourceName)) {
 
                         var the_screenshot = source.thumbnail.toPNG();
@@ -101,7 +103,7 @@ async function takeScreenshot() {
                             image: the_screenshot.toString('base64')
                         }
 
-                        console.log(data);
+                        console.log(timer);
 
                         axios.post(apiEndpoint + "/desktop/save_screenshots", data, {
                             headers: headers
@@ -190,7 +192,7 @@ async function generateActivity() {
                 headers: headers
             })
             .then((response) => {
-                console.log(response);
+               // console.log(response);
                 activity.is_mouse = activity.is_keyboard = 0;
             })
             .catch((error) => {
@@ -233,11 +235,11 @@ function createWindow() {
     //win.loadURL('https://desktop.rubii.com');
     win.loadURL(frameUrl);
     // http://localhost:3000
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 
-    win.removeMenu();
+    //win.removeMenu();
     // or set the Menu to null
-    win.setMenu(null);
+    //win.setMenu(null);
 
     // Keyboard activity
     uiohook.uIOhook.on('keydown', (e) => {
@@ -273,5 +275,6 @@ app.on('activate', function() {
 })
 
 setInterval(takeScreenshot, 10 * 60 * 1000); // 10 minutes
+//setInterval(takeScreenshot, 1 * 60 * 1000); 
 setInterval(saveSoftware, 1*1000);
 setInterval(generateActivity, 1*1000);
