@@ -173,13 +173,7 @@ function Login() {
           activeClientTimer.seconds_tracked = result.data.json.seconds_tracked; // seconds
           var sessionTimer = sessionStorage.getItem("timer");
           var sessionTimer = JSON.parse(sessionTimer);
-
-          console.log(sessionTimer);
-          console.log(sessionTimer.timer);
-          console.log('ah');
-
           if(sessionTimer.timer == 0 || sessionTimer.company_id == null || sessionTimer.company_id == '') {
-            console.log('triggered issue');
             const timerDataSession = {
               timer: 1,
               timer_id: result.data.json.timer_id,
