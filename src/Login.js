@@ -2,14 +2,18 @@ import React, { Component, useState, useEffect }  from 'react';
 import rubii from './img/rubii.png';
 import userAvatar from './img/avatar.png';
 import rubiibubble from './img/rubii-bubble.png';
+import refresh from './img/rubii-refresh.png';
 import play from './img/play.png';
 import pause from './img/pause.png';
 import smallpause from './img/small-pause.png';
 import axios from 'axios';
 // Import electron
 const electron = window.require('electron');
+const remote = electron.remote;
 const shell = electron.shell;
 const ipcRenderer = electron.ipcRenderer;
+const globalShortcut = electron.globalShortcut
+const getCurrentWindow = electron.getCurrentWindow;
 
 function Login() {
   
@@ -54,6 +58,44 @@ function Login() {
       clearInterval(timer);   // <-- Change here
       setTimer(false);
       setOpen(false);
+    };
+
+    // Refresh
+
+    const handleRefresh = () => {
+
+      setLoader(true);
+      setMainLoader(true);
+
+      // We need to stop the timer if it's already running
+      setActiveTaskTimer([]);
+      setActiveClientTimer([]);
+      clearInterval(timer);   // <-- Change here
+      setTimer(false);
+      const timerDataSession = {
+        timer: 0,
+        timer_id: '',
+        company_id: ''
+      };
+      sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
+
+      // Get the data
+      axios({
+        method: "POST",
+        url: process.env.REACT_APP_API_URL + '/desktop/get',
+        headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
+        data: {
+          user_id: userData.id
+        }
+      }).then(result => {
+        setClients(result.data.json.clients);
+        setActiveClient(result.data.json.client);
+        setActiveTasks(result.data.json.client.tasks);
+        setSeconds(result.data.json.client.seconds_tracked);
+        setLoader(false);
+        setMainLoader(false);
+      });
+
     };
 
     const chooseClient = (client) => {
@@ -138,7 +180,7 @@ function Login() {
             url: process.env.REACT_APP_API_URL + '/desktop/get',
             headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
             data: {
-              user_id: 7
+              user_id: userData.id
             }
           }).then(result => {
             setClients(result.data.json.clients);
@@ -187,7 +229,7 @@ function Login() {
         })
       }
     }, [seconds, userData]);
-  
+
     const handleStartToggle = (seconds) => {
       // Start new timer only if it's not run yet
       if(!timer && activeTask.id) {
@@ -398,6 +440,10 @@ function Login() {
             </div>
           </div>
 
+          <div onClick={handleRefresh} className="refreshIcon">
+            <img src={refresh} className="refresh" /> <span className="text">Refresh</span>
+          </div>
+
         </div>
 
         <div className="desktop-right">
@@ -432,14 +478,17 @@ function Login() {
                       <div className="flex-display">
                         <div className="leftBottomDisplay">
                           <p><strong>{activeTask.name}</strong></p>
+                          <p>({activeTask.identificator})</p>
                           <span className="lastActivity">{activeTask.dateLastActivityFormat}</span><br /><br />
                         </div>
                         <div className="rightBottomDisplay">
                           <p><strong>{activeTask.status_txt}</strong></p>
                         </div>
+                        {activeTask.url ? 
                         <div className="rightBottomDisplayo">
                           <p className="cursor-pointer" onClick={() => { shell.openExternal(activeTask.url); }}><strong>Open Task</strong></p>
                         </div>
+                        : ''}
                       </div>
                     {activeTask.desc ? <div dangerouslySetInnerHTML={{__html: activeTask.desc_for_html}}/>: 'No description'}</div>
                 </div>
