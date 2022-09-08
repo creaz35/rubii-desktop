@@ -16,7 +16,10 @@ const globalShortcut = electron.globalShortcut
 const getCurrentWindow = electron.getCurrentWindow;
 
 function Login() {
-  
+
+    const [choosenAccountId, setChoosenAccountId] = useState('');
+    const [nbrAccounts, setNbrAccounts] = useState(0);
+    const [multipleAccounts, setMultipleAccounts] = useState([]);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -58,6 +61,9 @@ function Login() {
       clearInterval(timer);   // <-- Change here
       setTimer(false);
       setOpen(false);
+      setMultipleAccounts([]);
+      setNbrAccounts(0);
+      setChoosenAccountId('');
     };
 
     // Refresh
@@ -111,6 +117,12 @@ function Login() {
       setActiveTask(task);
     };
 
+    const chooseAccount = (value) => {
+      console.log('changed');
+      console.log(value);
+      setChoosenAccountId(value);
+    };
+
     const handleLogin = (event) => {
 
       //Prevent page reload
@@ -122,7 +134,8 @@ function Login() {
         headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
         data: {
           email: email,
-          password: password
+          password: password,
+          choosenAccountId: choosenAccountId
         }
       })
       .then(result => {
@@ -147,6 +160,17 @@ function Login() {
           } else {
             // Credentials are wrong
             setErrorMessage(result.data.json.message);
+            // If multiple accounts
+            if(result.data.json.nbr_accounts > 1) {
+              console.log('detected multiple account');
+              setNbrAccounts(result.data.json.nbr_accounts); // Nbrs
+              setMultipleAccounts(result.data.json.users); // List of all users
+            } else {
+              console.log('detected no multiple account');
+              setMultipleAccounts([]);
+              setNbrAccounts(0);
+              setChoosenAccountId('');
+            }
           }
       })
       .catch(error => {
@@ -212,16 +236,30 @@ function Login() {
           }
         })
         .then(result => {
-          activeClientTimer.seconds_tracked = result.data.json.seconds_tracked; // seconds
-          var sessionTimer = sessionStorage.getItem("timer");
-          var sessionTimer = JSON.parse(sessionTimer);
-          if(sessionTimer.timer == 0 || sessionTimer.company_id == null || sessionTimer.company_id == '') {
+          if(result.data.json.error == false) {
+            activeClientTimer.seconds_tracked = result.data.json.seconds_tracked; // seconds
+            var sessionTimer = sessionStorage.getItem("timer");
+            var sessionTimer = JSON.parse(sessionTimer);
+            if(sessionTimer.timer == 0 || sessionTimer.company_id == null || sessionTimer.company_id == '') {
+              const timerDataSession = {
+                timer: 1,
+                timer_id: result.data.json.timer_id,
+                company_id: result.data.json.company_id
+              };
+              sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
+            }
+          } else {
+            setActiveTaskTimer([]);
+            setActiveClientTimer([]);
+            clearInterval(timer);   // <-- Change here
+            setTimer(false);
             const timerDataSession = {
-              timer: 1,
-              timer_id: result.data.json.timer_id,
-              company_id: result.data.json.company_id
+              timer: 0,
+              timer_id: '',
+              company_id: ''
             };
             sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
+            alert(result.data.json.message);
           }
         })
         .catch(error => {
@@ -299,6 +337,21 @@ function Login() {
                   </div>
                   <div className="error-container">
                     <div className="error">{errorMessage}</div>
+
+                    {(nbrAccounts > 1 ) && <div>
+                    <div className="error">You have multiple account under this email address. <br />Please choose the correct account below.</div>
+                    <br />
+                    <select
+                      value={choosenAccountId}
+                      onChange={e => chooseAccount(e.target.value)}
+                      className="selectAccount"
+                    >
+                      <option value="">Please choose</option>
+                      {multipleAccounts.map(({ id, username_login }, index) => <option value={id} >{username_login}</option>)}
+                    </select>
+
+                    </div>}
+
                   </div>
                   <div className="button-container">
                       <button className="loginBtn" type="submit" disabled={loader}>
@@ -410,7 +463,7 @@ function Login() {
           </div>
 
           <div className="row">
-            <div className="timer-clock" onClick={handleLogout}>
+            <div className="timer-clock">
             <div>{toHHMMSS(seconds)}</div> <span className="icon"></span>
             </div>
           </div>

@@ -237,9 +237,9 @@ function createWindow() {
     // http://localhost:3000
     //win.webContents.openDevTools();
 
-    //win.removeMenu();
+    win.removeMenu();
     // or set the Menu to null
-    //win.setMenu(null);
+    win.setMenu(null);
 
     // Keyboard activity
     uiohook.uIOhook.on('keydown', (e) => {

@@ -30,4 +30,8 @@ Now
 npm start
 npm run start-electron
 
+#web push
+npm run dist
+npm run build-react
+
 Brian :)
