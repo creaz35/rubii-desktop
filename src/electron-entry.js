@@ -1,5 +1,6 @@
 const electron = require('electron');
 const BrowserWindow = electron.BrowserWindow;
+const dialog = electron.dialog;
 const desktopCapturer = electron.desktopCapturer;
 const idle = electron.powerMonitor;
 const remote = electron.remote;
@@ -17,6 +18,8 @@ const activeWindowPage = require('active-win');
 const BMParser = require('bookmark-parser');
 const axios = require('axios'); 
 const uiohook = require('uiohook-napi');
+const { autoUpdater } = require("electron-updater");
+const debug = require('debug')('Franz:ipcApi:autoUpdate');
 const activity = { is_mouse: 0, is_keyboard: 0 };
 const headers = {
     'Content-Type': 'application/json;charset=UTF-8', 
@@ -25,14 +28,9 @@ const headers = {
     "Accept": "application/json"
 }
 const sessionUser = null;
+let updateInterval = null;
 
 app.disableHardwareAcceleration();
-
-require('update-electron-app')({
-    repo: 'creaz35/rubii-desktop',
-    updateInterval: '1 hour',
-    logger: require('electron-log')
-})
 
 let apiEndpoint = 'https://rubii.com/api'; // By default, we are in production
 let frameUrl = 'https://desktop.rubii.com';
@@ -45,10 +43,33 @@ let frameUrl = 'https://desktop.rubii.com';
 //    frameUrl = 'http://localhost:3000';
 //}
 
-function showNotification () {
-    //const NOTIFICATION_TITLE = 'Hi there';
-    //const NOTIFICATION_BODY = 'Notification from the Main process';
-    //new notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show();
+autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+       type: 'info',
+       buttons: ['Ok'],
+       title: 'Update Available',
+       message: process.platform === 'win32' ? releaseNotes : releaseName,
+       detail: 'A new version download started. The app will be restarted to install the update.'
+    };
+    dialog.showMessageBox(dialogOpts);
+    updateInterval = null;
+});
+
+autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+       type: 'info',
+       buttons: ['Restart', 'Later'],
+       title: 'Application Update',
+       message: process.platform === 'win32' ? releaseNotes : releaseName,
+       detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    };
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+       if (returnValue.response === 0) autoUpdater.quitAndInstall()
+    });
+});
+
+function checkUpdate () {
+    updateInterval = setInterval(() => autoUpdater.checkForUpdates(), 600000);
 }
 
 let win;
@@ -135,7 +156,8 @@ function saveSoftware() {
     if(user && timer) {
 
         if(timer.timer == 1) {
-            software.user_id = user.id;
+            software.user = user;
+            software.timer = timer;
 
             axios.post(apiEndpoint + "/desktop/save_app", software, {
                 headers: headers
@@ -262,7 +284,7 @@ function createWindow() {
 
 }
 
-app.whenReady().then(createWindow).then(showNotification);
+app.whenReady().then(createWindow).then(checkUpdate);
 
 app.on('window-all-closed', function() {
     app.quit();

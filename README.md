@@ -13,25 +13,22 @@ npm install
 npm start
 
 # open another tab and run electron
-npm run electron
+npm run start-electron
 ```
+
+## Push to the web server
+
+npm run dist
+npm run build-react
 
 to create an executable DMG or EXE file
 ```
-npm run dist
-"build": "react-scripts build",
-Now
-"build": "electron-builder build --mac --win --publish never"
+"build": "electron-builder build --mac --win --publish always"
 
 # Then checkout your dist/ to see the .dmg file
 ```
 
-#new
-npm start
-npm run start-electron
-
-#web push
-npm run dist
-npm run build-react
+#rebuild electron
+./node_modules/.bin/electron-rebuild
 
 Brian :)
