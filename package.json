@@ -2,7 +2,7 @@
   "name": "rubii",
   "author": "Brian Millot",
   "description": "Rubii Desktop App",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "private": true,
   "main": "./src/electron-entry.js",
   "dependencies": {
@@ -28,6 +28,8 @@
     "rebuild": "electron-rebuild",
     "build": "electron-builder build --win --publish never",
     "deploy": "electron-builder build --win --publish always",
+    "deploy:win": "electron-builder build --win --publish always",
+    "deploy:mac": "cross-env NODE_ENV=production npm run test && npm run prod-build && electron-builder --mac --publish always",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "electron .",
@@ -42,6 +44,7 @@
     "axios": "^0.18.0",
     "electron": "^19.0.1",
     "electron-builder": "^20.8.1",
+    "electron-notarize": "^1.2.1",
     "electron-rebuild": "^3.2.7"
   },
   "build": {
@@ -56,8 +59,7 @@
       }
     ],
     "mac": {
-      "icon": "./public/icons/mac/icon.icns",
-      "target": "pkg"
+      "icon": "./public/icons/mac/icon.icns"
     },
     "win": {
       "icon": "./public/icons/png/256x256.png",

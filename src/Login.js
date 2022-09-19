@@ -30,11 +30,13 @@ function Login() {
     const [activeTask, setActiveTask] = useState([]);
     const [activeTaskTimer, setActiveTaskTimer] = useState([]);
     const [loader, setLoader] = useState(false);
+    const [loaderAddTask, setLoaderAddTask] = useState(false);
     const [seconds, setSeconds] = useState(0);
     const [timeFormat, setTimeFormat] = useState('00:00:00');
     const [timer, setTimer] = useState(false);
     const [searchValueClient, setSearchValueClient] = useState("");
     const [searchValueTask, setSearchValueTask] = useState("");
+    const [addToDoTask, setAddToDoTask] = useState("");
     const [completedTasks, setCompletedTasks] = useState(false); 
     const [userData, setUserData] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -121,6 +123,33 @@ function Login() {
       console.log('changed');
       console.log(value);
       setChoosenAccountId(value);
+    };
+
+    const addTask = () => {
+
+      if(addToDoTask != '') {
+
+        setLoaderAddTask(true);
+
+        axios({
+          method: "POST",
+          url: process.env.REACT_APP_API_URL + '/desktop/add_task',
+          headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
+          data: {
+            task: addToDoTask,
+            company: activeClient,
+            user: userData
+          }
+        }).then(result => {
+          setAddToDoTask('');
+          handleRefresh();
+        })
+        .catch(error => {
+          setErrorMessage('Unexpected error');
+        })
+
+      }
+
     };
 
     const handleLogin = (event) => {
@@ -322,14 +351,14 @@ function Login() {
             <div className="form">
               <form onSubmit={handleLogin}>
                   <div className="input-container">
-                      <input type="text" value={email} required placeholder="Email" onInput={e => setEmail(e.target.value)}/>
+                      <input type="text"  value={email || ""} required placeholder="Email" onChange={e => setEmail(e.target.value)}/>
                   </div>
                   <div className="input-container mt-20">
-                    <input type="password" value={password} required placeholder="Password" onInput={e => setPassword(e.target.value)}/>
+                    <input type="password" value={password || ""} required placeholder="Password" onChange={e => setPassword(e.target.value)}/>
                   </div>
                   <div className="extra-buttons">
                       <div className="remember-me checkbox text-left">
-                          <input type="checkbox" value="lsRememberMe" id="rememberMe" /> <label for="rememberMe" className="checkbox">Remember me</label>
+                          <input type="checkbox" value="lsRememberMe" id="rememberMe" /> <label htmlFor="rememberMe" className="checkbox">Remember me</label>
                       </div>
                       <div className="forgot-password text-right">
                           <div className="cursor-pointer" onClick={() => { shell.openExternal("https://rubii.com/app/forgot_password"); }}>Forgot Password?</div>
@@ -516,10 +545,19 @@ function Login() {
             <div className="row right-task-entry">
               <div className="left">
                 <input type="checkbox" id="showCompleted" onChange={handleShowCompleted} />
-                <label className="checkbox" for="showCompleted">Show Completed</label>
+                <label className="checkbox" htmlFor="showCompleted">Show Completed</label>
               </div>
               <div className="right text-right">
                 <input type="text" value={searchValueTask} onChange={e => setSearchValueTask(e.target.value)}  className="search-bar-tasks" placeholder="Search Tasks"/>
+              </div>
+            </div>
+
+            <div className="row addTask-row">
+              <div className="left">
+                <input type="text" className="bar" value={addToDoTask || ""} required placeholder="Add Task" onChange={e => setAddToDoTask(e.target.value)}/>
+                <div className="addTaskBtn" onClick={addTask} disabled={loaderAddTask}>
+                  +
+                </div>
               </div>
             </div>
 
