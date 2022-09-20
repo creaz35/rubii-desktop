@@ -141,8 +141,15 @@ function Login() {
             user: userData
           }
         }).then(result => {
+
+          if(result.data.json.error == false) {
+            activeClient.tasks.push(result.data.json.task);
+            //activeTasks.push(result.data.json.task);
+          }
+          
           setAddToDoTask('');
-          handleRefresh();
+          setLoaderAddTask(false);
+ 
         })
         .catch(error => {
           setErrorMessage('Unexpected error');

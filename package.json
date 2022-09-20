@@ -2,7 +2,7 @@
   "name": "rubii",
   "author": "Brian Millot",
   "description": "Rubii Desktop App",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "private": true,
   "main": "./src/electron-entry.js",
   "dependencies": {
