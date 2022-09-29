@@ -43,9 +43,17 @@ function Login() {
     const [mainLoader, setMainLoader] = useState(false);
     const [IsFirstTimeLanding, setIsFirstTimeLanding] = useState(false);
     const [FromLoggingForm, setFromLoggingForm] = useState(false);
+    const [refreshProgress, setRefreshProgress] = useState(false);
     // Dropdown
     const [isOpen, setOpen] = useState(false);
     const toggleDropdown = () => setOpen(!isOpen);
+
+    ipcRenderer.on("terminate-timer", function (event, data) {
+      // Logout if there is no internet connection 
+      if(timer) {
+        handleLogout();
+      }
+    });
 
     // Logout
     const handleLogout = () => {
@@ -60,6 +68,7 @@ function Login() {
       setTimer(false);
       setActiveTaskTimer([]);
       setActiveClientTimer([]);
+      setClients([]);
       clearInterval(timer);   // <-- Change here
       setTimer(false);
       setOpen(false);
@@ -86,23 +95,7 @@ function Login() {
         company_id: ''
       };
       sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
-
-      // Get the data
-      axios({
-        method: "POST",
-        url: process.env.REACT_APP_API_URL + '/desktop/get',
-        headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
-        data: {
-          user_id: userData.id
-        }
-      }).then(result => {
-        setClients(result.data.json.clients);
-        setActiveClient(result.data.json.client);
-        setActiveTasks(result.data.json.client.tasks);
-        setSeconds(result.data.json.client.seconds_tracked);
-        setLoader(false);
-        setMainLoader(false);
-      });
+      setClients([]);
 
     };
 
@@ -120,8 +113,6 @@ function Login() {
     };
 
     const chooseAccount = (value) => {
-      console.log('changed');
-      console.log(value);
       setChoosenAccountId(value);
     };
 
@@ -198,11 +189,9 @@ function Login() {
             setErrorMessage(result.data.json.message);
             // If multiple accounts
             if(result.data.json.nbr_accounts > 1) {
-              console.log('detected multiple account');
               setNbrAccounts(result.data.json.nbr_accounts); // Nbrs
               setMultipleAccounts(result.data.json.users); // List of all users
             } else {
-              console.log('detected no multiple account');
               setMultipleAccounts([]);
               setNbrAccounts(0);
               setChoosenAccountId('');
@@ -233,7 +222,7 @@ function Login() {
         setMainLoader(true);
       }
 
-      if(isLoggedIn && loader) {
+      if(isLoggedIn && loader && clients.length === 0) {
 
         axios({
             method: "POST",
@@ -313,8 +302,12 @@ function Login() {
 
         setTimer(setInterval(() => {
           setSeconds((current) => current + 1);
+          const newObjActiveTask = activeTask;
+          newObjActiveTask.seconds_tracked = newObjActiveTask.seconds_tracked + 1;
+          setActiveTask(newObjActiveTask);
         }, 1000));
-      // Else, it's already running, we stop it
+        
+      // Else, it's already running, we stop it and reset
       } else {
         setActiveTaskTimer([]);
         setActiveClientTimer([]);
@@ -432,13 +425,12 @@ function Login() {
     const listTasks = activeTasks.filter(filterTask).map(function(task, index) {
       return (
         <li key={index} onClick={() => chooseTask(task)} className={activeTaskTimer.id === task.id ? "taskTableDetails active" : (activeTask.id === task.id ? "taskTableDetails activeClick" : "taskTableDetails")}> 
-          {activeTaskTimer.id === task.id &&<span className="smallbtnblock"> <img src={smallpause} className="play-sm" onClick={handleStartToggle} /> </span>}<span className="left-task">{task.name}</span> <span className="right-task">{task.due_formated_desktop}</span>
+          {activeTaskTimer.id === task.id &&<span className="smallbtnblock"> <img src={smallpause} className="play-sm" onClick={handleStartToggle} /> </span>}<span className="left-task">{task.name}<br /> {toHHMMSS(task.seconds_tracked)}</span> <span className="right-task">{task.due_formated_desktop}</span>
         </li>
       ); 
     }); 
 
     const handleShowCompleted = () => { 
-      console.log('The checkbox was toggled'); 
       setCompletedTasks(!completedTasks);
     };
 

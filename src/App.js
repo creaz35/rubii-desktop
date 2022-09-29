@@ -6,7 +6,6 @@ import Login from './Login'
 //const API_URL = 'https://todosapi.dev/api/todos';
 
 class App extends Component {
-
   render() {
     return (
       <div className="App">
