@@ -41,8 +41,8 @@ if (process.platform === 'win32')
 let apiEndpoint = 'https://rubii.com/api'; // By default, we are in production
 let frameUrl = 'https://desktop.rubii.com';
 
-apiEndpoint = "http://creaz:81/xorix/api";
-frameUrl = 'http://localhost:3000';
+//apiEndpoint = "http://creaz:81/xorix/api";
+//frameUrl = 'http://localhost:3000';
 
 //if (isDev) { // or if(process.env.NODE_ENV)
 //    apiEndpoint = "http://creaz:81/xorix/api";
@@ -290,9 +290,9 @@ function createWindow() {
     // http://localhost:3000
     //win.webContents.openDevTools();
 
-    //win.removeMenu();
+    win.removeMenu();
     // or set the Menu to null
-    //win.setMenu(null);
+    win.setMenu(null);
 
     // Keyboard activity
     uiohook.uIOhook.on('keydown', (e) => {
