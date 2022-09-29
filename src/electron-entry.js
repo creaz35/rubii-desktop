@@ -294,6 +294,9 @@ function createWindow() {
     // or set the Menu to null
     win.setMenu(null);
 
+    // Reload cache
+    win.webContents.reloadIgnoringCache();
+
     // Keyboard activity
     uiohook.uIOhook.on('keydown', (e) => {
         //console.log('Keyboard!')
