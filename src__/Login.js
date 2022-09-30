@@ -342,7 +342,7 @@ function Login() {
           <div className="login-form">
             <img src={rubii} className="logo" />
             <div className="form">
-              <form onSubmit={handleLogin}>test
+              <form onSubmit={handleLogin}>
                   <div className="input-container">
                       <input type="text"  value={email || ""} required placeholder="Email" onChange={e => setEmail(e.target.value)}/>
                   </div>
@@ -495,7 +495,7 @@ function Login() {
             {!timer && <div><h2 className="client-name"> {activeClient.name}</h2><p className="task-name">{activeTask.name}</p></div>}
 
             {timer && <img src={pause} className="play" onClick={handleStartToggle} />}
-            {!timer && <img src={play} className="play" onClick={handleStartToggle} />}
+            {!timer && <img src={play} className="play" onClick={handleStartToggle} />} test if cache....
           </div>
 
           <div className="row project-task-showcase-search">

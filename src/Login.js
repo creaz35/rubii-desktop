@@ -378,9 +378,7 @@ function Login() {
                       <option value="">Please choose</option>
                       {multipleAccounts.map(({ id, username_login }, index) => <option value={id} >{username_login}</option>)}
                     </select>
-
                     </div>}
-
                   </div>
                   <div className="button-container">
                       <button className="loginBtn" type="submit" disabled={loader}>

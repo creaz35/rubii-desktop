@@ -32,11 +32,11 @@ let updateInterval = null;
 
 app.disableHardwareAcceleration();
 
-let apiEndpoint = 'https://rubii.com/api'; // By default, we are in production
+let apiEndpoint = 'https://rubii.com/api'; // By default, we are in production, see update
 let frameUrl = 'https://desktop.rubii.com';
 
-apiEndpoint = "http://creaz:81/xorix/api";
-frameUrl = 'http://localhost:3000';
+//apiEndpoint = "http://creaz:81/xorix/api";
+//frameUrl = 'http://localhost:3000';
 
 //if (isDev) { // or if(process.env.NODE_ENV)
 //    apiEndpoint = "http://creaz:81/xorix/api";
