@@ -31,7 +31,7 @@ let updateInterval = null;
 
 app.disableHardwareAcceleration();
 electron.powerSaveBlocker.start('prevent-app-suspension');
-electron.commandLine.appendSwitch ("disable-http-cache");
+//electron.commandLine.appendSwitch ("disable-http-cache");
 
 // Change App Name on Windows
 if (process.platform === 'win32')
