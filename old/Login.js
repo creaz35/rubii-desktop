@@ -495,7 +495,7 @@ function Login() {
             {!timer && <div><h2 className="client-name"> {activeClient.name}</h2><p className="task-name">{activeTask.name}</p></div>}
 
             {timer && <img src={pause} className="play" onClick={handleStartToggle} />}
-            {!timer && <img src={play} className="play" onClick={handleStartToggle} />} test if cache....
+            {!timer && <img src={play} className="play" onClick={handleStartToggle} />}
           </div>
 
           <div className="row project-task-showcase-search">
