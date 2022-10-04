@@ -225,36 +225,9 @@ function getSessionTimer() {
 
 async function generateActivity() {
 
-    var user = await getSessionUser();
-    var timer = await getSessionTimer();
-    // Now we wait for the async calls to resolve before continuing the execution inside this function.
-
-    if (user && timer) {
-
-        if (timer.timer == 1) {
-
-            activity.user = user;
-            activity.timer = timer;
-
-            var data = {
-                activity: activity
-            }
-
-            axios.post(apiEndpoint + "/desktop/save_activity", data, {
-                headers: headers
-            })
-                .then((response) => {
-                    // console.log(response);
-                    activity.is_mouse = activity.is_keyboard = 0;
-                })
-                .catch((error) => {
-                    activity.is_mouse = activity.is_keyboard = 0;
-                    //console.log(error);
-                })
-
-        }
-
-    }
+    win.webContents.send("set-activity", activity);
+    // We reset after we send it
+    activity.is_mouse = activity.is_keyboard = 0;
 
 }
 
@@ -311,7 +284,7 @@ function createWindow() {
     })
 
     // Start listener for keyboard and mouse
-    uiohook.uIOhook.start()
+    uiohook.uIOhook.start();
 
     win.on('close', function () {
         win = null;

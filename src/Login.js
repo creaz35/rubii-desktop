@@ -29,6 +29,7 @@ function Login() {
     const [activeTasks, setActiveTasks] = useState([]);
     const [activeTask, setActiveTask] = useState([]);
     const [activeTaskTimer, setActiveTaskTimer] = useState([]);
+    const [activity, setActivity] = useState([]);
     const [loader, setLoader] = useState(false);
     const [loaderAddTask, setLoaderAddTask] = useState(false);
     const [seconds, setSeconds] = useState(0);
@@ -52,6 +53,14 @@ function Login() {
       // Logout if there is no internet connection 
       if(timer) {
         handleLogout();
+      }
+    });
+
+    // Set activity if there were any keyboard, mouse
+    ipcRenderer.on("set-activity", function (event, data) {
+      // If the timer is on 
+      if(timer) {
+        setActivity(data);
       }
     });
 
@@ -257,7 +266,8 @@ function Login() {
             activeTask: activeTaskTimer,
             activeClient: activeClientTimer,
             user: userData,
-            seconds: seconds
+            seconds: seconds,
+            activity: activity
           }
         })
         .then(result => {
