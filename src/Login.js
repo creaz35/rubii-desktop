@@ -14,6 +14,7 @@ const shell = electron.shell;
 const ipcRenderer = electron.ipcRenderer;
 const globalShortcut = electron.globalShortcut
 const getCurrentWindow = electron.getCurrentWindow;
+const log = window.require('electron-log');
 
 function Login() {
 
@@ -33,8 +34,10 @@ function Login() {
     const [loader, setLoader] = useState(false);
     const [loaderAddTask, setLoaderAddTask] = useState(false);
     const [seconds, setSeconds] = useState(0);
+    const [secondsDisplay, setSecondsDisplay] = useState(0);
     const [timeFormat, setTimeFormat] = useState('00:00:00');
     const [timer, setTimer] = useState(false);
+    const [timerChild, setTimerChild] = useState(false);
     const [searchValueClient, setSearchValueClient] = useState("");
     const [searchValueTask, setSearchValueTask] = useState("");
     const [addToDoTask, setAddToDoTask] = useState("");
@@ -51,9 +54,7 @@ function Login() {
 
     ipcRenderer.on("terminate-timer", function (event, data) {
       // Logout if there is no internet connection 
-      if(timer) {
-        handleLogout();
-      }
+      handleLogout();
     });
 
     // Set activity if there were any keyboard, mouse
@@ -74,12 +75,16 @@ function Login() {
       setIsFirstTimeLanding(false);
       setFromLoggingForm(false);
       setSeconds(0);
+      setSecondsDisplay(0);
       setTimer(false);
+      setTimerChild(false);
       setActiveTaskTimer([]);
       setActiveClientTimer([]);
       setClients([]);
       clearInterval(timer);   // <-- Change here
+      clearInterval(timerChild); 
       setTimer(false);
+      setTimerChild(false);
       setOpen(false);
       setMultipleAccounts([]);
       setNbrAccounts(0);
@@ -97,7 +102,9 @@ function Login() {
       setActiveTaskTimer([]);
       setActiveClientTimer([]);
       clearInterval(timer);   // <-- Change here
+      clearInterval(timerChild);
       setTimer(false);
+      setTimerChild(false);
       const timerDataSession = {
         timer: 0,
         timer_id: '',
@@ -113,6 +120,7 @@ function Login() {
       setActiveTasks(client.tasks);
       if(!timer) {
         setSeconds(client.seconds_tracked); // OK?
+        setSecondsDisplay(client.seconds_tracked);
       }
       setActiveTask([]); // Reset
     };
@@ -245,6 +253,7 @@ function Login() {
             setActiveClient(result.data.json.client);
             setActiveTasks(result.data.json.client.tasks);
             setSeconds(result.data.json.client.seconds_tracked);
+            setSecondsDisplay(result.data.json.client.seconds_tracked);
             setLoader(false);
             setMainLoader(false);
             if(!FromLoggingForm) {
@@ -267,7 +276,8 @@ function Login() {
             activeClient: activeClientTimer,
             user: userData,
             seconds: seconds,
-            activity: activity
+            activity: activity,
+            newTimeFrame: 1
           }
         })
         .then(result => {
@@ -287,7 +297,9 @@ function Login() {
             setActiveTaskTimer([]);
             setActiveClientTimer([]);
             clearInterval(timer);   // <-- Change here
+            clearInterval(timerChild); 
             setTimer(false);
+            setTimerChild(false);
             const timerDataSession = {
               timer: 0,
               timer_id: '',
@@ -298,7 +310,8 @@ function Login() {
           }
         })
         .catch(error => {
-          console.log(error);
+          log.warn('Problem with api /track');
+          log.warn(error);
         })
       }
     }, [seconds, userData]);
@@ -310,11 +323,17 @@ function Login() {
         setActiveTaskTimer(activeTask);
         setActiveClientTimer(activeClient);
 
+        // Every 10 seconds to avoid overload
         setTimer(setInterval(() => {
-          setSeconds((current) => current + 1);
+          setSeconds((current) => current + 5);
+        }, 5000));
+
+        // Every seconds
+        setTimerChild(setInterval(() => {
           const newObjActiveTask = activeTask;
           newObjActiveTask.seconds_tracked = newObjActiveTask.seconds_tracked + 1;
           setActiveTask(newObjActiveTask);
+          setSecondsDisplay((current_display) => current_display + 1);
         }, 1000));
         
       // Else, it's already running, we stop it and reset
@@ -322,7 +341,9 @@ function Login() {
         setActiveTaskTimer([]);
         setActiveClientTimer([]);
         clearInterval(timer);   // <-- Change here
+        clearInterval(timerChild); 
         setTimer(false);
+        setTimerChild(false);
         const timerDataSession = {
           timer: 0,
           timer_id: '',
@@ -500,7 +521,7 @@ function Login() {
 
           <div className="row">
             <div className="timer-clock">
-            <div>{toHHMMSS(seconds)}</div> <span className="icon"></span>
+            <div>{toHHMMSS(secondsDisplay)}</div> <span className="icon"></span>
             </div>
           </div>
 

@@ -51,28 +51,42 @@ let frameUrl = 'https://desktop.rubii.com';
 //}
 
 var internetAvailable = require("internet-available");
-let noInternetNotificationSent = false;
 
-function liveInternetCheck() {
+let isConnected = false;
+let counterInternet = 0;
+let allowSendInternetNotification = 1;
+
+async function liveInternetCheck() {
+
+    var userSessionCheck = await getSessionUser();
+
     // Most easy way
     internetAvailable({
+        domainName: "rubii.com",
         // Provide maximum execution time for the verification
-        timeout: 5000,
-        // If it tries 5 times and it fails, then it will throw no internet
-        retries: 5
+        timeout: 10000,
+        // If it tries 10 times and it fails, then it will throw no internet
+        retries: 10
     }).then(() => {
         // Available Internet
-        noInternetNotificationSent = false;
+        isConnected = true;
+        counterInternet++;
+        if(counterInternet > 3 && allowSendInternetNotification == 0) {
+            allowSendInternetNotification = 1;
+        }
     }).catch(() => {
         // Not available internet
-        if(noInternetNotificationSent == false) {
+        isConnected = false;
+        if(isConnected == false && userSessionCheck && allowSendInternetNotification == 1) {
             var message = 'Your internet has been disconnected! Please login again';
             new notification({ title: 'Ooops', body: message }).show();
-            noInternetNotificationSent = true;
             // Logout the user in the other end
-            win.webContents.send("terminate-timer", "hello")
+            win.webContents.send("terminate-timer", "hello");
+            allowSendInternetNotification = 0;
+            counterInternet = 0;
         }
     });
+
 }
 
 autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
@@ -90,7 +104,7 @@ autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
 autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
     const dialogOpts = {
         type: 'info',
-        buttons: ['Restart', 'Later'],
+        buttons: ['Restart'],
         title: 'Application Update',
         message: process.platform === 'win32' ? releaseNotes : releaseName,
         detail: 'A new version has been downloaded. Restart the application to apply the updates.'
@@ -192,12 +206,12 @@ function saveSoftware() {
                 axios.post(apiEndpoint + "/desktop/save_app", software, {
                     headers: headers
                 })
-                    .then((response) => {
-                        //console.log(response);
-                    })
-                    .catch((error) => {
-                        //console.log(error);
-                    })
+                .then((response) => {
+                    //console.log(response);
+                })
+                .catch((error) => {
+                    //console.log(error);
+                })
 
             }
         }
@@ -305,7 +319,6 @@ app.on('activate', function () {
 })
 
 setInterval(takeScreenshot, 10 * 60 * 1000); // 10 minutes
-//setInterval(takeScreenshot, 1 * 60 * 1000); 
-setInterval(saveSoftware, 1 * 1000);
+setInterval(saveSoftware, 5 * 1000); // 5 seconds
 setInterval(generateActivity, 1 * 1000);
-setInterval(function() { liveInternetCheck(); }, 1000)
+setInterval(function() { liveInternetCheck(); }, 10 * 1000); // 10 seconds
