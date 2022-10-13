@@ -42,8 +42,8 @@ if (process.platform === 'win32')
 let apiEndpoint = 'https://rubii.com/api'; // By default, we are in production
 let frameUrl = 'https://desktop.rubii.com';
 
-apiEndpoint = "http://creaz:81/xorix/api"; // Brian
-frameUrl = 'http://localhost:3000'; // Brian
+//apiEndpoint = "http://creaz:81/xorix/api"; // Brian
+//frameUrl = 'http://localhost:3000'; // Brian
 
 //if (isDev) { // or if(process.env.NODE_ENV)
 //    apiEndpoint = "http://creaz:81/xorix/api";
@@ -278,9 +278,9 @@ function createWindow() {
     // http://localhost:3000
     //win.webContents.openDevTools();
 
-    //win.removeMenu(); // Brian
+    win.removeMenu(); // Brian
     // or set the Menu to null
-    //win.setMenu(null); // Brian
+    win.setMenu(null); // Brian
 
     // Reload cache
     win.webContents.reloadIgnoringCache();
