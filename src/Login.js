@@ -19,6 +19,7 @@ const log = window.require('electron-log');
 function Login() {
 
     const [choosenAccountId, setChoosenAccountId] = useState('');
+    const [choosenFilterTask, setChoosenFilterTask] = useState('nameaz');
     const [nbrAccounts, setNbrAccounts] = useState(0);
     const [multipleAccounts, setMultipleAccounts] = useState([]);
     const [email, setEmail] = useState('');
@@ -112,10 +113,10 @@ function Login() {
       };
       sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
       setClients([]);
-
     };
 
     const chooseClient = (client) => {
+      client.tasks = generateObjTaskFilter(client.tasks, choosenFilterTask);
       setActiveClient(client);
       setActiveTasks(client.tasks);
       if(!timer) {
@@ -131,6 +132,29 @@ function Login() {
 
     const chooseAccount = (value) => {
       setChoosenAccountId(value);
+    };
+
+    const chooseTaskFilter = (value) => {
+      setChoosenFilterTask(value);
+      var sortedTasks = generateObjTaskFilter(activeTasks, value);
+      setActiveTasks(sortedTasks);
+    };
+
+    const generateObjTaskFilter = (newObject, value) => {
+      if(value == 'nameza') {
+        newObject.sort((a, b) => (a.strtolower_name < b.strtolower_name) ? 1 : -1);
+      } else if(value == 'nameaz') {
+        newObject.sort((a, b) => (a.strtolower_name > b.strtolower_name) ? 1 : -1);
+      } else if(value == 'dueasc') {
+        console.log('due here');
+        newObject.sort((a,b) => b.strtotime_due - a.strtotime_due);
+      } else if(value == 'duedesc') {
+        newObject.sort((a,b) => a.strtotime_due - b.strtotime_due);
+      }
+
+      console.log(newObject);
+
+      return newObject;
     };
 
     const addTask = () => {
@@ -582,10 +606,18 @@ function Login() {
 
             <div className="row addTask-row">
               <div className="left">
-                <input type="text" className="bar" value={addToDoTask || ""} required placeholder="Add Task" onChange={e => setAddToDoTask(e.target.value)}/>
+                <input type="text" className="bar addFieldInput" value={addToDoTask || ""} required placeholder="Add Task" onChange={e => setAddToDoTask(e.target.value)}/>
                 <div className="addTaskBtn" onClick={addTask} disabled={loaderAddTask}>
                   +
                 </div>
+              </div>
+              <div className="right text-right">
+                <select className="selectFilterOption" value={choosenFilterTask} onChange={e => chooseTaskFilter(e.target.value)}>
+                  <option value="nameaz">By Name (A-Z)</option>
+                  <option value="nameza">By Name (Z-A)</option>
+                  <option value="dueasc">By Due Date (ASC)</option>
+                  <option value="duedesc">By Due Date (DESC)</option>
+                </select>
               </div>
             </div>
 

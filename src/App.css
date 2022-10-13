@@ -61,6 +61,19 @@ input[type="password"] {
   color: #000;
 }
 
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: rgb(139, 149, 158);
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: rgb(139, 149, 158);
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: rgb(139, 149, 158);
+}
+
 .loginBtn {
   margin-top: 10px;
   cursor: pointer;
@@ -421,6 +434,7 @@ ul.list {
 .desktop-container .search-bar-tasks {
   background: #edeef2;
   color: #000;
+  width: 220px;
 }
 
 .fixed-bottom-task {
@@ -660,14 +674,42 @@ body {
   margin-left: 15px;
 }
 
+.selectFilterOption {
+  height: 25px;
+  background: #edeef2;
+  outline: none;
+  border: 0px !important;
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: rgb(139, 149, 158);
+  width: 235px;
+  height: 35px;
+  margin-left: 15px;
+}
+
 .addTask-row {
   margin-top: 25px;
+  text-align: left;
+  margin-top: 45px;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -ms-flex-direction: row !important;
+  flex-direction: row !important;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .addTask-row .bar {
   background: #fff;
   border: 2px solid #eee !important;
   color: #000;
+}
+
+.addFieldInput {
+  width: 235px !important;
 }
 
 .addTaskBtn {
@@ -685,4 +727,11 @@ body {
   font-weight: bold;
   margin-top: 0;
   display: inline-block;
+}
+
+.addTask-row .left {
+    width: 45%;
+}
+.addTask-row .right {
+  width: 55%;
 }
