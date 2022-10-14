@@ -207,12 +207,12 @@ input[type="password"] {
   text-align: left;
   display: block;
   width: 10px;
-  margin-bottom: 35px;
+  margin-bottom: 10px;
   margin-top: 15px;
 }
 
 .refreshIcon .text {
-  margin-top: -20px;
+  margin-top: 5px;
   margin-left: 10px;
   color: #000;
   font-size: 0.8rem;
@@ -229,6 +229,21 @@ input[type="password"] {
   font-weight: bold;
   font-size: 1.5em;
   border-radius: 15px;
+}
+
+.inline-hidden {
+  display: inline-block;
+  width: 45%;
+}
+
+.inline-completed {
+  display: inline-block;
+  width: 50%;
+}
+
+.version {
+  color: #f57670;
+  font-size: 0.8rem;
 }
 
 .timer-clock .icon {
@@ -360,7 +375,7 @@ ul.list {
 }
 
 .chart-container {
-  max-height: 450px;
+  max-height: 45vh;
   overflow-y: auto;
 }
 
@@ -427,7 +442,7 @@ ul.list {
 }
 
 .flexcroll-mini2{
-  max-height: 500px;
+  max-height: 32vh;
   overflow-y: auto;
 }
 
@@ -435,10 +450,6 @@ ul.list {
   background: #edeef2;
   color: #000;
   width: 220px;
-}
-
-.fixed-bottom-task {
-  height: 135px;
 }
 
 .dots {
@@ -734,4 +745,16 @@ body {
 }
 .addTask-row .right {
   width: 55%;
+}
+
+.spinnerLoad {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.hide-task {
+  cusor: pointer;
 }

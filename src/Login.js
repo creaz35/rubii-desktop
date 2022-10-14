@@ -2,11 +2,13 @@ import React, { Component, useState, useEffect }  from 'react';
 import rubii from './img/rubii.png';
 import userAvatar from './img/avatar.png';
 import rubiibubble from './img/rubii-bubble.png';
+import Spinner from './Spinner.js';
 import refresh from './img/rubii-refresh.png';
 import play from './img/play.png';
 import pause from './img/pause.png';
 import smallpause from './img/small-pause.png';
 import axios from 'axios';
+import audio from './woosh.mp3';
 // Import electron
 const electron = window.require('electron');
 const remote = electron.remote;
@@ -15,6 +17,7 @@ const ipcRenderer = electron.ipcRenderer;
 const globalShortcut = electron.globalShortcut
 const getCurrentWindow = electron.getCurrentWindow;
 const log = window.require('electron-log');
+const pj = require('../package.json');
 
 function Login() {
 
@@ -43,6 +46,7 @@ function Login() {
     const [searchValueTask, setSearchValueTask] = useState("");
     const [addToDoTask, setAddToDoTask] = useState("");
     const [completedTasks, setCompletedTasks] = useState(false); 
+    const [hiddenTasks, setHiddenTasks] = useState(false); 
     const [userData, setUserData] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [mainLoader, setMainLoader] = useState(false);
@@ -155,6 +159,52 @@ function Login() {
       console.log(newObject);
 
       return newObject;
+    };
+
+    const hideTask = () => {
+
+      new Audio(audio).play();
+
+      if(activeTask.hidden == true) {
+        var is_hidden = false;
+      } else {
+        var is_hidden = true;
+      }
+
+      const newObj = { ...activeTask, hidden: is_hidden };
+      setActiveTask(newObj);
+
+      // Client Tasks
+      activeClient.tasks.map(function(item, i){
+        if(item.id == activeTask.id) {
+            item.hidden = is_hidden;
+        }
+      })
+
+      // Clients
+      clients.map(function(client, i){
+        clients.map(function(item, t){
+          if(item.id == activeTask.id) {
+              item.hidden = is_hidden;
+          }
+        })
+      })
+      
+      axios({
+        method: "POST",
+        url: process.env.REACT_APP_API_URL + '/desktop/hide_task',
+        headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
+        data: {
+          task: activeTask,
+          user: userData
+        }
+      }).then(result => {
+        console.log(result.data.json);
+      })
+      .catch(error => {
+        setErrorMessage('Unexpected error');
+      })
+
     };
 
     const addTask = () => {
@@ -344,6 +394,8 @@ function Login() {
       // Start new timer only if it's not run yet
       if(!timer && activeTask.id) {
 
+        new Audio(audio).play();
+
         setActiveTaskTimer(activeTask);
         setActiveClientTimer(activeClient);
 
@@ -362,6 +414,9 @@ function Login() {
         
       // Else, it's already running, we stop it and reset
       } else {
+
+        new Audio(audio).play();
+
         setActiveTaskTimer([]);
         setActiveClientTimer([]);
         clearInterval(timer);   // <-- Change here
@@ -464,13 +519,25 @@ function Login() {
       ); 
     }); 
 
-    const filterTask = ({ name, dueComplete }) => {
-      if(completedTasks) {
+    const filterTask = ({ name, dueComplete, hidden }) => {
+      console.log(hidden)
+      if(completedTasks && !hiddenTasks) {
         if(completedTasks == dueComplete) {
           return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
         }
+      } else if(hiddenTasks && !completedTasks) {
+        if(hiddenTasks == hidden) {
+          return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
+        }
+      } else if(hiddenTasks && completedTasks) {
+        if(hiddenTasks == hidden && completedTasks == dueComplete) {
+          return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
+        }
       } else {
-        return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
+        // We do not show hidden tasks
+        if(hidden != true) {
+          return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
+        }
       }
     };
 
@@ -485,6 +552,10 @@ function Login() {
 
     const handleShowCompleted = () => { 
       setCompletedTasks(!completedTasks);
+    };
+
+    const handleShowHidden = () => { 
+      setHiddenTasks(!hiddenTasks);
     };
 
     const showTasksClient = (
@@ -578,6 +649,10 @@ function Login() {
             <img src={refresh} className="refresh" /> <span className="text">Refresh</span>
           </div>
 
+          <div className="version">
+            Rubii v{pj.version}
+          </div>
+
         </div>
 
         <div className="desktop-right">
@@ -596,8 +671,17 @@ function Login() {
 
             <div className="row right-task-entry">
               <div className="left">
-                <input type="checkbox" id="showCompleted" onChange={handleShowCompleted} />
-                <label className="checkbox" htmlFor="showCompleted">Show Completed</label>
+                
+                <div className="inline-completed">
+                  <input type="checkbox" id="showCompleted" onChange={handleShowCompleted} />
+                  <label className="checkbox" htmlFor="showCompleted">Show Completed</label>
+                </div>
+
+                <div className="inline-hidden">
+                  <input type="checkbox" id="showHidden" onChange={handleShowHidden} />
+                  <label className="checkbox" htmlFor="showHidden">Show Hidden</label>
+                </div>
+
               </div>
               <div className="right text-right">
                 <input type="text" value={searchValueTask} onChange={e => setSearchValueTask(e.target.value)}  className="search-bar-tasks" placeholder="Search Tasks"/>
@@ -635,6 +719,15 @@ function Login() {
                         <div className="rightBottomDisplay">
                           <p><strong>{activeTask.status_txt}</strong></p>
                         </div>
+                        <div className="rightBottomDisplay">
+                          <a onClick={() => hideTask()} className="hide-task">
+                            <strong>
+                            {!activeTask.hidden ? 
+                                'Hide Task'
+                            : 'Unhide Task'}
+                              </strong>
+                          </a>
+                        </div>
                         {activeTask.url ? 
                         <div className="rightBottomDisplayo">
                           <p className="cursor-pointer" onClick={() => { shell.openExternal(activeTask.url); }}><strong>Open Task</strong></p>
@@ -651,7 +744,7 @@ function Login() {
         </div>
 
       </div>
-      : 'Loading...'
+      : <Spinner />
     }
     </div>
     );
@@ -659,7 +752,7 @@ function Login() {
     return (
       <div>
         {isLoggedIn && !loader ? deskTopApp
-        : isLoggedIn && mainLoader ? 'Please wait...'
+        : isLoggedIn && mainLoader ? <Spinner />
         : renderForm}
       </div>
     )
