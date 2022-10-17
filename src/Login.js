@@ -9,6 +9,7 @@ import pause from './img/pause.png';
 import smallpause from './img/small-pause.png';
 import axios from 'axios';
 import audio from './woosh.mp3';
+import { useSpeechSynthesis } from "react-speech-kit";
 // Import electron
 const electron = window.require('electron');
 const remote = electron.remote;
@@ -20,6 +21,8 @@ const log = window.require('electron-log');
 const pj = require('../package.json');
 
 function Login() {
+
+    const { speak, voices } = useSpeechSynthesis();
 
     const [choosenAccountId, setChoosenAccountId] = useState('');
     const [choosenFilterTask, setChoosenFilterTask] = useState('nameaz');
@@ -72,6 +75,15 @@ function Login() {
 
     // Logout
     const handleLogout = () => {
+
+      var sessionUser = sessionStorage.getItem("user");
+      var sessionUser = JSON.parse(sessionUser);
+
+      speak({
+        text: 'Good Bye' + sessionUser.first_name,
+        voice: voices[1]
+      });
+
       sessionStorage.removeItem('user');
       sessionStorage.removeItem('timer');
       setUserData([]);
@@ -94,6 +106,7 @@ function Login() {
       setMultipleAccounts([]);
       setNbrAccounts(0);
       setChoosenAccountId('');
+
     };
 
     // Refresh
@@ -155,8 +168,6 @@ function Login() {
       } else if(value == 'duedesc') {
         newObject.sort((a,b) => a.strtotime_due - b.strtotime_due);
       }
-
-      console.log(newObject);
 
       return newObject;
     };
@@ -273,7 +284,18 @@ function Login() {
               timer_id: '',
               company_id: ''
             };
+
             sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
+
+            speak({
+              text: 'Welcome Back' + userLogin.first_name,
+              voice: voices[1],
+            });
+
+            speak({
+              text: 'How are you doing today?',
+              voice: voices[1],
+            });
 
           } else {
             // Credentials are wrong
@@ -520,7 +542,6 @@ function Login() {
     }); 
 
     const filterTask = ({ name, dueComplete, hidden }) => {
-      console.log(hidden)
       if(completedTasks && !hiddenTasks) {
         if(completedTasks == dueComplete) {
           return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
@@ -622,8 +643,8 @@ function Login() {
 
           <div className="row project-task-showcase">
 
-            {timer && <div><h2 className="client-name"> {activeClientTimer.name}</h2><p className="task-name">{activeTaskTimer.name}</p></div>}
-            {!timer && <div><h2 className="client-name"> {activeClient.name}</h2><p className="task-name">{activeTask.name}</p></div>}
+            {timer && <div><h2 className="client-name"> {activeClientTimer.name}</h2>{activeClientTimer.start_subscription_period ? <p>Billing Cycle: {activeClientTimer.start_subscription_period} - {activeClientTimer.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month</p>: ''}<p className="task-name">{activeTaskTimer.name}</p></div>}
+            {!timer && <div><h2 className="client-name"> {activeClient.name}</h2>{activeClient.start_subscription_period ? <p>{activeClient.start_subscription_period} - {activeClient.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month</p>: ''}<p className="task-name">{activeTask.name}</p></div>}
 
             {timer && <img src={pause} className="play" onClick={handleStartToggle} />}
             {!timer && <img src={play} className="play" onClick={handleStartToggle} />}

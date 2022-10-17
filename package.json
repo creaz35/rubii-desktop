@@ -21,6 +21,7 @@
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
     "react-scripts": "1.1.1",
+    "react-speech-kit": "^3.0.1",
     "save": "^2.5.0",
     "uiohook-napi": "^1.2.0",
     "update-electron-app": "^2.0.1"
