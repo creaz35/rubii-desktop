@@ -474,6 +474,23 @@ function Login() {
 
     }
 
+    const formatHoursWorked = (seconds) => {
+
+      var sec_num = parseInt(seconds, 10)
+      var hours   = Math.floor(sec_num / 3600)
+      var minutes = Math.floor(sec_num / 60) % 60
+      var seconds = sec_num % 60;
+
+      if(hours == 0 && minutes == 0) {
+        var value = 'No time tracked yet';
+      } else {
+        var value = hours + ' hours and ' + minutes + ' minutes';
+      }
+
+      return value;
+
+    }
+
     const renderForm = (
       <div>
 
@@ -643,8 +660,8 @@ function Login() {
 
           <div className="row project-task-showcase">
 
-            {timer && <div><h2 className="client-name"> {activeClientTimer.name}</h2>{activeClientTimer.start_subscription_period ? <p>Billing Cycle: {activeClientTimer.start_subscription_period} - {activeClientTimer.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month</p>: ''}<p className="task-name">{activeTaskTimer.name}</p></div>}
-            {!timer && <div><h2 className="client-name"> {activeClient.name}</h2>{activeClient.start_subscription_period ? <p>{activeClient.start_subscription_period} - {activeClient.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month</p>: ''}<p className="task-name">{activeTask.name}</p></div>}
+            {timer && <div><h2 className="client-name"> {activeClientTimer.name}</h2>{activeClientTimer.start_subscription_period ? <p>Billing Cycle: {activeClientTimer.start_subscription_period} - {activeClientTimer.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month<br />{formatHoursWorked(activeClient.worked_seconds)}</p>: ''}<p className="task-name">{activeTaskTimer.name}</p></div>}
+            {!timer && <div><h2 className="client-name"> {activeClient.name}</h2>{activeClient.start_subscription_period ? <p>{activeClient.start_subscription_period} - {activeClient.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month<br />{formatHoursWorked(activeClient.worked_seconds)}</p>: ''}<p className="task-name">{activeTask.name}</p></div>}
 
             {timer && <img src={pause} className="play" onClick={handleStartToggle} />}
             {!timer && <img src={play} className="play" onClick={handleStartToggle} />}
