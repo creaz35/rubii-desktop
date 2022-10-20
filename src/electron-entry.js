@@ -28,7 +28,6 @@ const headers = {
 }
 const sessionUser = null;
 let updateInterval = null;
-const rax = require('retry-axios');
 
 app.disableHardwareAcceleration();
 electron.powerSaveBlocker.start('prevent-app-suspension');
