@@ -8,6 +8,7 @@ import play from './img/play.png';
 import pause from './img/pause.png';
 import smallpause from './img/small-pause.png';
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import audio from './woosh.mp3';
 import { useSpeechSynthesis } from "react-speech-kit";
 // Import electron
@@ -55,14 +56,27 @@ function Login() {
     const [mainLoader, setMainLoader] = useState(false);
     const [IsFirstTimeLanding, setIsFirstTimeLanding] = useState(false);
     const [FromLoggingForm, setFromLoggingForm] = useState(false);
+    const [isDisconnected, setIsDisconnected] = useState(false);
     const [refreshProgress, setRefreshProgress] = useState(false);
     // Dropdown
     const [isOpen, setOpen] = useState(false);
     const toggleDropdown = () => setOpen(!isOpen);
 
+    // Retry up to 5 times with a 5 seconds delay
+    //  retryCondition: axiosRetry.isRetryableError
+
+    axiosRetry(axios, {
+     retries: 5, // number of retries,
+     shouldResetTimeout: true,
+      retryDelay: (retryCount) => {
+        return retryCount * 5000;
+      },
+      retryCondition: (_error) => true
+    });
+
     ipcRenderer.on("terminate-timer", function (event, data) {
       // Logout if there is no internet connection 
-      handleLogout();
+      handleLogout(1);
     });
 
     // Set activity if there were any keyboard, mouse
@@ -74,15 +88,21 @@ function Login() {
     });
 
     // Logout
-    const handleLogout = () => {
+    const handleLogout = (voiceOn) => {
 
       var sessionUser = sessionStorage.getItem("user");
       var sessionUser = JSON.parse(sessionUser);
 
-      speak({
-        text: 'Good Bye' + sessionUser.first_name,
-        voice: voices[1]
-      });
+      if(sessionUser) {
+        if(sessionUser.first_name) {
+          if(voiceOn == 1) {
+            //speak({
+            //  text: 'Good Bye' + sessionUser.first_name,
+            //  voice: voices[1]
+            //});
+          }
+        } 
+      }
 
       sessionStorage.removeItem('user');
       sessionStorage.removeItem('timer');
@@ -95,8 +115,10 @@ function Login() {
       setSecondsDisplay(0);
       setTimer(false);
       setTimerChild(false);
+      setActiveTask([]);
       setActiveTaskTimer([]);
       setActiveClientTimer([]);
+      setActiveClient([]);
       setClients([]);
       clearInterval(timer);   // <-- Change here
       clearInterval(timerChild); 
@@ -106,7 +128,7 @@ function Login() {
       setMultipleAccounts([]);
       setNbrAccounts(0);
       setChoosenAccountId('');
-
+      setIsDisconnected(true);
     };
 
     // Refresh
@@ -152,6 +174,7 @@ function Login() {
     };
 
     const chooseTaskFilter = (value) => {
+      new Audio(audio).play();
       setChoosenFilterTask(value);
       var sortedTasks = generateObjTaskFilter(activeTasks, value);
       setActiveTasks(sortedTasks);
@@ -163,7 +186,6 @@ function Login() {
       } else if(value == 'nameaz') {
         newObject.sort((a, b) => (a.strtolower_name > b.strtolower_name) ? 1 : -1);
       } else if(value == 'dueasc') {
-        console.log('due here');
         newObject.sort((a,b) => b.strtotime_due - a.strtotime_due);
       } else if(value == 'duedesc') {
         newObject.sort((a,b) => a.strtotime_due - b.strtotime_due);
@@ -210,7 +232,7 @@ function Login() {
           user: userData
         }
       }).then(result => {
-        console.log(result.data.json);
+        //console.log(result.data.json);
       })
       .catch(error => {
         setErrorMessage('Unexpected error');
@@ -237,7 +259,8 @@ function Login() {
 
           if(result.data.json.error == false) {
             activeClient.tasks.push(result.data.json.task);
-            //activeTasks.push(result.data.json.task);
+            const newObjTasks = generateObjTaskFilter(activeClient.tasks, choosenFilterTask);
+            setActiveTasks(newObjTasks);
           }
           
           setAddToDoTask('');
@@ -257,6 +280,8 @@ function Login() {
       //Prevent page reload
       event.preventDefault();
 
+      setLoader(true);
+
       axios({
         method: "POST",
         url: process.env.REACT_APP_API_URL + '/desktop/login',
@@ -271,11 +296,13 @@ function Login() {
           if(result.data.json.error == false) {
             // Ok the user was able to logged in with no issue
             var userLogin = result.data.json.userLogin;
+            setIsDisconnected(false);
             setUserData(userLogin);
             setErrorMessage('');
             setIsLoggedIn(true);
-            setLoader(true);
             setFromLoggingForm(true);
+            clearInterval(timer);   // <-- Change here
+            clearInterval(timerChild); 
             sessionStorage.setItem('user', JSON.stringify(userLogin));
 
             // Handle the data we need to check if timer is on 
@@ -287,15 +314,15 @@ function Login() {
 
             sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
 
-            speak({
-              text: 'Welcome Back' + userLogin.first_name,
-              voice: voices[1],
-            });
+            //speak({
+            //  text: 'Welcome Back' + userLogin.first_name,
+            //  voice: voices[1],
+            //});
 
-            speak({
-              text: 'How are you doing today?',
-              voice: voices[1],
-            });
+            //speak({
+            //  text: 'How are you doing today?',
+            //  voice: voices[1],
+            //});
 
           } else {
             // Credentials are wrong
@@ -363,11 +390,15 @@ function Login() {
 
     useEffect(() => {
       if (seconds > 0 && timer) {
+
+        let source = axios.CancelToken.source();
+
         axios({
           method: "POST",
           url: process.env.REACT_APP_API_URL + '/desktop/track',
           headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
           data: {
+            cancelToken: source.token,
             activeTask: activeTaskTimer,
             activeClient: activeClientTimer,
             user: userData,
@@ -405,11 +436,42 @@ function Login() {
             alert(result.data.json.message);
           }
         })
-        .catch(error => {
-          log.warn('Problem with api /track');
-          log.warn(error);
-        })
-      }
+        .catch((error) => {
+
+          if(isDisconnected === false) {
+            handleLogout(0);
+            speak({
+              text: 'There is something wrong with your network! Please login again',
+              voice: voices[1],
+            });
+            ipcRenderer.send('bad-internet');
+          }
+
+          // Error
+          if (error.response) {
+              // The request was made and the server responded with a status code
+              // that falls out of the range of 2xx
+              // console.log(error.response.data);
+              //console.log(error.response.status);
+              // console.log(error.response.headers);
+          } else if (error.request) {
+              // The request was made but no response was received
+              // `error.request` is an instance of XMLHttpRequest in the 
+              // browser and an instance of
+              // http.ClientRequest in node.js
+              //console.log(error.request);
+          } else {
+              // Something happened in setting up the request that triggered an Error
+              //console.log('Error', error.message);
+          }
+
+          // Call fails, we need to let the user know to check its network
+          //alert(error.message);
+          //handleLogout();
+
+          //console.log(error.config);
+      })
+     }
     }, [seconds, userData]);
 
     const handleStartToggle = (seconds) => {
@@ -436,21 +498,24 @@ function Login() {
         
       // Else, it's already running, we stop it and reset
       } else {
+        if(timer) {
 
-        new Audio(audio).play();
+          new Audio(audio).play();
 
-        setActiveTaskTimer([]);
-        setActiveClientTimer([]);
-        clearInterval(timer);   // <-- Change here
-        clearInterval(timerChild); 
-        setTimer(false);
-        setTimerChild(false);
-        const timerDataSession = {
-          timer: 0,
-          timer_id: '',
-          company_id: ''
-        };
-        sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
+          setActiveTaskTimer([]);
+          setActiveClientTimer([]);
+          clearInterval(timer);   // <-- Change here
+          clearInterval(timerChild); 
+          setTimer(false);
+          setTimerChild(false);
+          const timerDataSession = {
+            timer: 0,
+            timer_id: '',
+            company_id: ''
+          };
+          sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
+
+        }
       }
     }
 
@@ -482,7 +547,7 @@ function Login() {
       var seconds = sec_num % 60;
 
       if(hours == 0 && minutes == 0) {
-        var value = 'No time tracked yet';
+        var value = 'No time tracked yet for this current cycle';
       } else {
         var value = hours + ' hours and ' + minutes + ' minutes';
       }

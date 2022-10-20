@@ -28,6 +28,7 @@ const headers = {
 }
 const sessionUser = null;
 let updateInterval = null;
+const rax = require('retry-axios');
 
 app.disableHardwareAcceleration();
 electron.powerSaveBlocker.start('prevent-app-suspension');
@@ -119,6 +120,12 @@ function checkUpdate() {
 }
 
 let win;
+
+
+ipcMain.on('bad-internet', (evt, arg) => {
+    new notification({ title: 'Ooops', body: 'There is something wrong with your network! Please login again' }).show();
+    win.webContents.reload();
+});
 
 ipcMain.on('close-me', (evt, arg) => {
     new notification({ title: 'Ooops', body: 'We hope to see you again!' }).show();
@@ -321,4 +328,4 @@ app.on('activate', function () {
 setInterval(takeScreenshot, 10 * 60 * 1000); // 10 minutes
 setInterval(saveSoftware, 5 * 1000); // 5 seconds
 setInterval(generateActivity, 1 * 1000);
-setInterval(function() { liveInternetCheck(); }, 10 * 1000); // 10 seconds
+//setInterval(function() { liveInternetCheck(); }, 10 * 1000); // 10 seconds
