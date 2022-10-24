@@ -32,5 +32,6 @@ to create an executable DMG or EXE file
 ./node_modules/.bin/electron-rebuild
 git clone https://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@github.com/creaz35/rubii-desktop.git .
 developer@rubii.com
+new is λ git push https://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@github.com/creaz35/rubii-desktop.git
 
 Brian :)

@@ -65,8 +65,8 @@
     "mac": {
       "icon": "./public/icons/mac/icon.icns",
       "hardenedRuntime": true,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
+      "entitlements": "./entitlements.mac.plist",
+      "entitlementsInherit": "./entitlements.mac.plist",
       "gatekeeperAssess": false,
       "category": "public.app-category.developer-tools"
     },
