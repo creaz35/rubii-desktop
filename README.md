@@ -28,7 +28,7 @@ to create an executable DMG or EXE file
 # Then checkout your dist/ to see the .dmg file
 ```
 
-#rebuild electron
+#rebuild electron version
 ./node_modules/.bin/electron-rebuild
 git clone https://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@github.com/creaz35/rubii-desktop.git .
 developer@rubii.com
