@@ -63,7 +63,12 @@
       }
     ],
     "mac": {
-      "icon": "./public/icons/mac/icon.icns"
+      "icon": "./public/icons/mac/icon.icns",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "gatekeeperAssess": false,
+      "category": "public.app-category.developer-tools"
     },
     "win": {
       "icon": "./public/icons/png/256x256.png",
