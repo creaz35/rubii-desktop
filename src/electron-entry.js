@@ -56,46 +56,13 @@ let isConnected = false;
 let counterInternet = 0;
 let allowSendInternetNotification = 1;
 
-async function liveInternetCheck() {
-
-    var userSessionCheck = await getSessionUser();
-
-    // Most easy way
-    internetAvailable({
-        domainName: "rubii.com",
-        // Provide maximum execution time for the verification
-        timeout: 10000,
-        // If it tries 10 times and it fails, then it will throw no internet
-        retries: 10
-    }).then(() => {
-        // Available Internet
-        isConnected = true;
-        counterInternet++;
-        if(counterInternet > 3 && allowSendInternetNotification == 0) {
-            allowSendInternetNotification = 1;
-        }
-    }).catch(() => {
-        // Not available internet
-        isConnected = false;
-        if(isConnected == false && userSessionCheck && allowSendInternetNotification == 1) {
-            var message = 'Your internet has been disconnected! Please login again';
-            new notification({ title: 'Ooops', body: message }).show();
-            // Logout the user in the other end
-            win.webContents.send("terminate-timer", "hello");
-            allowSendInternetNotification = 0;
-            counterInternet = 0;
-        }
-    });
-
-}
-
 autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
     const dialogOpts = {
         type: 'info',
         buttons: ['Ok'],
         title: 'Update Available',
         message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version download started. The app will be restarted to install the update.'
+        detail: 'A new version is available. The app will be restarted to install the update.'
     };
     dialog.showMessageBox(dialogOpts);
     updateInterval = null;
@@ -107,7 +74,7 @@ autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
         buttons: ['Restart'],
         title: 'Application Update',
         message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+        detail: 'A new version has been downloaded. Restart the application to apply the update.'
     };
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
         if (returnValue.response === 0) autoUpdater.quitAndInstall()
@@ -243,11 +210,20 @@ function getSessionTimer() {
         });
 }
 
-async function generateActivity() {
+function generateActivity() {
 
-    win.webContents.send("set-activity", activity);
-    // We reset after we send it
-    activity.is_mouse = activity.is_keyboard = 0;
+    (async () => {
+        var user = await getSessionUser();
+        var timer = await getSessionTimer();
+
+        if (user && timer) {
+            if (timer.timer == 1) {
+                win.webContents.send("set-activity", activity);
+                // We reset after we send it
+                activity.is_mouse = activity.is_keyboard = 0;
+            }
+        }
+    })();
 
 }
 
@@ -326,5 +302,5 @@ app.on('activate', function () {
 
 setInterval(takeScreenshot, 10 * 60 * 1000); // 10 minutes
 setInterval(saveSoftware, 5 * 1000); // 5 seconds
-setInterval(generateActivity, 1 * 1000);
+setInterval(generateActivity, 1 * 5000); // 5 seconds
 //setInterval(function() { liveInternetCheck(); }, 10 * 1000); // 10 seconds

@@ -2,11 +2,12 @@
   "name": "rubii",
   "author": "Rubii",
   "description": "Rubii Desktop App",
-  "version": "1.0.14",
+  "version": "1.0.16",
   "private": true,
   "main": "./src/electron-entry.js",
   "dependencies": {
     "active-win": "^7.7.2",
+    "axios": "^1.1.3",
     "axios-retry": "^3.3.1",
     "bookmark-parser": "^0.1.6",
     "check-internet-connected": "^2.0.6",
@@ -20,7 +21,7 @@
     "is-online": "^10.0.0",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
-    "react-scripts": "1.1.1",
+    "react-scripts": "2.1.8",
     "react-speech-kit": "^3.0.1",
     "save": "^2.5.0",
     "uiohook-napi": "^1.2.0",
@@ -45,7 +46,6 @@
     "build-react": "react-scripts build"
   },
   "devDependencies": {
-    "axios": "^0.18.1",
     "electron": "^19.0.1",
     "electron-builder": "^20.8.1",
     "electron-notarize": "^1.2.1",
@@ -81,5 +81,11 @@
       "certificatePassword": "s]czfA&BZ0?Z7jr}"
     },
     "extends": null
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

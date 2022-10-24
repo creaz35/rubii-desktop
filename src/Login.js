@@ -74,35 +74,23 @@ function Login() {
       retryCondition: (_error) => true
     });
 
-    ipcRenderer.on("terminate-timer", function (event, data) {
-      // Logout if there is no internet connection 
-      handleLogout(1);
-    });
-
     // Set activity if there were any keyboard, mouse
-    ipcRenderer.on("set-activity", function (event, data) {
-      // If the timer is on 
-      if(timer) {
+    useEffect(()=>{
+      const listener= (_, data) => {
         setActivity(data);
+      };
+      ipcRenderer.on('set-activity', listener);
+      
+      return ()=>{
+        ipcRenderer.removeListener('set-activity', listener);
       }
-    });
+    })
 
     // Logout
     const handleLogout = (voiceOn) => {
 
       var sessionUser = sessionStorage.getItem("user");
       var sessionUser = JSON.parse(sessionUser);
-
-      if(sessionUser) {
-        if(sessionUser.first_name) {
-          if(voiceOn == 1) {
-            //speak({
-            //  text: 'Good Bye' + sessionUser.first_name,
-            //  voice: voices[1]
-            //});
-          }
-        } 
-      }
 
       sessionStorage.removeItem('user');
       sessionStorage.removeItem('timer');
@@ -314,16 +302,6 @@ function Login() {
 
             sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
 
-            //speak({
-            //  text: 'Welcome Back' + userLogin.first_name,
-            //  voice: voices[1],
-            //});
-
-            //speak({
-            //  text: 'How are you doing today?',
-            //  voice: voices[1],
-            //});
-
           } else {
             // Credentials are wrong
             setErrorMessage(result.data.json.message);
@@ -345,12 +323,6 @@ function Login() {
     };
    
     useEffect(() => {
-
-      // First time only when the open the software
-      //if(userData != null && !FromLoggingForm) {
-      //  setLoader(true);
-      //  setIsLoggedIn(true);
-      //}
 
       var sessionUser = sessionStorage.getItem("user");
       var sessionUser = JSON.parse(sessionUser);
@@ -447,29 +419,6 @@ function Login() {
             ipcRenderer.send('bad-internet');
           }
 
-          // Error
-          if (error.response) {
-              // The request was made and the server responded with a status code
-              // that falls out of the range of 2xx
-              // console.log(error.response.data);
-              //console.log(error.response.status);
-              // console.log(error.response.headers);
-          } else if (error.request) {
-              // The request was made but no response was received
-              // `error.request` is an instance of XMLHttpRequest in the 
-              // browser and an instance of
-              // http.ClientRequest in node.js
-              //console.log(error.request);
-          } else {
-              // Something happened in setting up the request that triggered an Error
-              //console.log('Error', error.message);
-          }
-
-          // Call fails, we need to let the user know to check its network
-          //alert(error.message);
-          //handleLogout();
-
-          //console.log(error.config);
       })
      }
     }, [seconds, userData]);
