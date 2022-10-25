@@ -112,52 +112,58 @@ async function takeScreenshot() {
     var user = await getSessionUser();
     var timer = await getSessionTimer();
 
-    if (user && timer) {
+    if (typeof user === 'undefined' || user === null) {
+        
+    } else {
 
-        if (timer.timer == 1) {
+        if (user && timer) {
 
-            //console.log('Gathering screens...');
+            if (timer.timer == 1) {
 
-            //console.log(app.getPath('pictures'));
-            const thumbSize = determineScreenShotSize();
-            const workaroundTimestamp = Date.now();
+                //console.log('Gathering screens...');
 
-            const options = {
-                types: ['screen'],
-                thumbnailSize: { ...thumbSize, workaroundTimestamp }
-            };
+                //console.log(app.getPath('pictures'));
+                const thumbSize = determineScreenShotSize();
+                const workaroundTimestamp = Date.now();
 
-            desktopCapturer.getSources(options).then((sources) => {
-                console.log('Sources received:' + sources.length);
+                const options = {
+                    types: ['screen'],
+                    thumbnailSize: { ...thumbSize, workaroundTimestamp }
+                };
 
-                sources.forEach(function (source) {
-                    const sourceName = source.name.toLowerCase();
-                    //console.log(sourceName);
-                    if (['entire screen', 'screen 1'].includes(sourceName)) {
+                desktopCapturer.getSources(options).then((sources) => {
+                    console.log('Sources received:' + sources.length);
 
-                        var the_screenshot = source.thumbnail.toPNG();
+                    sources.forEach(function (source) {
+                        const sourceName = source.name.toLowerCase();
+                        //console.log(sourceName);
+                        if (['entire screen', 'screen 1'].includes(sourceName)) {
 
-                        var data = {
-                            user_id: user.id,
-                            company_id: timer.company_id,
-                            image: the_screenshot.toString('base64')
+                            var the_screenshot = source.thumbnail.toPNG();
+
+                            var data = {
+                                user_id: user.id,
+                                company_id: timer.company_id,
+                                image: the_screenshot.toString('base64')
+                            }
+
+                            axios.post(apiEndpoint + "/desktop/save_screenshots", data, {
+                                headers: headers
+                            })
+                            .then((response) => {
+                                // console.log(response);
+                            })
+                            .catch((error) => {
+                                //console.log(error);
+                            })
+
                         }
+                    })
+                }).catch(console.error);
 
-                        axios.post(apiEndpoint + "/desktop/save_screenshots", data, {
-                            headers: headers
-                        })
-                        .then((response) => {
-                            // console.log(response);
-                        })
-                        .catch((error) => {
-                            //console.log(error);
-                        })
-
-                    }
-                })
-            }).catch(console.error);
-
+            }
         }
+
     }
 
 }
@@ -170,23 +176,29 @@ function saveSoftware() {
         var user = await getSessionUser();
         var timer = await getSessionTimer();
 
-        if (user && timer) {
+        if (typeof user === 'undefined' || user === null) {
+        
+        } else {
 
-            if (timer.timer == 1) {
-                software.user = user;
-                software.timer = timer;
+            if (user && timer) {
 
-                axios.post(apiEndpoint + "/desktop/save_app", software, {
-                    headers: headers
-                })
-                .then((response) => {
-                    //console.log(response);
-                })
-                .catch((error) => {
-                    //console.log(error);
-                })
+                if (timer.timer == 1) {
+                    software.user = user;
+                    software.timer = timer;
 
+                    axios.post(apiEndpoint + "/desktop/save_app", software, {
+                        headers: headers
+                    })
+                    .then((response) => {
+                        //console.log(response);
+                    })
+                    .catch((error) => {
+                        //console.log(error);
+                    })
+
+                }
             }
+
         }
     })();
 
