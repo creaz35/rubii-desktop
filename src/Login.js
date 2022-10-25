@@ -315,6 +315,9 @@ function Login() {
               setChoosenAccountId('');
             }
           }
+
+          setLoader(false);
+
       })
       .catch(error => {
         setErrorMessage('Unexpected error');
