@@ -269,6 +269,7 @@ function Login() {
       event.preventDefault();
 
       setLoader(true);
+      setErrorMessage('');
 
       axios({
         method: "POST",
@@ -320,7 +321,8 @@ function Login() {
 
       })
       .catch(error => {
-        setErrorMessage('Unexpected error');
+        setErrorMessage('Unexpected error, check your network');
+        setLoader(false);
       })
 
     };

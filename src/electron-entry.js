@@ -50,12 +50,6 @@ let frameUrl = 'https://desktop.rubii.com';
 //    frameUrl = 'http://localhost:3000';
 //}
 
-var internetAvailable = require("internet-available");
-
-let isConnected = false;
-let counterInternet = 0;
-let allowSendInternetNotification = 1;
-
 autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
     const dialogOpts = {
         type: 'info',
@@ -86,7 +80,6 @@ function checkUpdate() {
 }
 
 let win;
-
 
 ipcMain.on('bad-internet', (evt, arg) => {
     new notification({ title: 'Ooops', body: 'There is something wrong with your network! Please login again' }).show();
@@ -125,14 +118,15 @@ async function takeScreenshot() {
                 //console.log(app.getPath('pictures'));
                 const thumbSize = determineScreenShotSize();
                 const workaroundTimestamp = Date.now();
+                const rubiiThumb = { width: 1280, height: 720 };
 
                 const options = {
                     types: ['screen'],
-                    thumbnailSize: { ...thumbSize, workaroundTimestamp }
+                    thumbnailSize: { ...rubiiThumb, workaroundTimestamp }
                 };
 
                 desktopCapturer.getSources(options).then((sources) => {
-                    console.log('Sources received:' + sources.length);
+                    //console.log('Sources received:' + sources.length);
 
                     sources.forEach(function (source) {
                         const sourceName = source.name.toLowerCase();
@@ -313,6 +307,6 @@ app.on('activate', function () {
 })
 
 setInterval(takeScreenshot, 10 * 60 * 1000); // 10 minutes
-setInterval(saveSoftware, 5 * 1000); // 5 seconds
+setInterval(saveSoftware, 8 * 1000); // 8 seconds
 setInterval(generateActivity, 1 * 5000); // 5 seconds
 //setInterval(function() { liveInternetCheck(); }, 10 * 1000); // 10 seconds
