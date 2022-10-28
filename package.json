@@ -2,7 +2,7 @@
   "name": "rubii",
   "author": "Rubii",
   "description": "Rubii Desktop App",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "private": true,
   "main": "./src/electron-entry.js",
   "dependencies": {
@@ -32,9 +32,11 @@
     "start-electron": "set NODE_ENV=true && electron .",
     "rebuild": "electron-rebuild",
     "build": "electron-builder build --win --publish never",
+    "build:win": "electron-builder build --win --publish never",
+    "build:mac": "electron-builder build --mac --publish never",
     "deploy": "electron-builder build --win --publish always",
     "deploy:win": "electron-builder build --win --publish always",
-    "deploy:mac": "cross-env NODE_ENV=production npm run test && npm run prod-build && electron-builder --mac --publish always",
+    "deploy:mac": "electron-builder build --mac --publish always",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "electron": "electron .",
@@ -46,15 +48,16 @@
     "build-react": "react-scripts build"
   },
   "devDependencies": {
+    "@electron/notarize": "^1.2.3",
     "electron": "^19.0.1",
-    "electron-builder": "^20.8.1",
-    "electron-notarize": "^1.2.1",
+    "electron-builder": "^22.7.0",
     "electron-rebuild": "^3.2.7"
   },
   "build": {
     "appId": "rubii",
     "productName": "Rubii",
     "copyright": "Copyright © 2022 Rubii",
+    "afterSign": "scripts/notarize.js",
     "publish": [
       {
         "provider": "github",
@@ -69,6 +72,9 @@
       "entitlementsInherit": "./entitlements.mac.plist",
       "gatekeeperAssess": false,
       "category": "public.app-category.developer-tools"
+    },
+    "dmg": {
+      "sign": false
     },
     "win": {
       "icon": "./public/icons/png/256x256.png",
