@@ -372,7 +372,7 @@ function Login() {
 
         axios({
           method: "POST",
-          url: process.env.REACT_APP_API_URL + '/desktop/track',
+          url: process.env.REACT_APP_API_URL + '/desktop/track?' + new Date().getTime(),
           headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
           data: {
             cancelToken: source.token,
