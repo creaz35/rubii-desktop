@@ -43,7 +43,7 @@ let apiEndpoint = 'https://rubii.com/api'; // By default, we are in production
 let frameUrl = 'https://desktop.rubii.com';
 
 //apiEndpoint = "http://creaz:81/xorix/api"; // Brian
-frameUrl = 'http://localhost:3000'; // Brian
+//frameUrl = 'http://localhost:3000'; // Brian
 
 //if (isDev) { // or if(process.env.NODE_ENV)
 //    apiEndpoint = "http://creaz:81/xorix/api";
@@ -89,6 +89,10 @@ ipcMain.on('bad-internet', (evt, arg) => {
 ipcMain.on('close-me', (evt, arg) => {
     new notification({ title: 'Ooops', body: 'We hope to see you again!' }).show();
     app.quit()
+});
+
+ipcMain.on('open-dev-tool', (evt, arg) => {
+    win.webContents.openDevTools();
 });
 
 function determineScreenShotSize() {

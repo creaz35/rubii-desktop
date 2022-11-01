@@ -398,6 +398,14 @@ function Login() {
               };
               sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
             }
+            if(activeClient.start_subscription_period) {
+              activeClient.worked_seconds = activeClient.worked_seconds + 15;
+              clients.map(function(client, i){
+                if(client.id == activeClient.id) {
+                  client.worked_seconds = client.worked_seconds + 15;
+                }
+              })
+            }
           } else {
             setActiveTaskTimer([]);
             setActiveClientTimer([]);
@@ -654,6 +662,10 @@ function Login() {
               <div className="dropdown-item" onClick={() => { shell.openExternal("https://rubii.com/app"); }}>Open Dashboard</div>
               <div className="dropdown-item" onClick={() => { shell.openExternal("https://rubii.com"); }}>Help Center</div>
               <div className="dropdown-item" onClick={() => { shell.openExternal("https://rubii.com"); }}>About Rubii</div>
+              {userData.id == 7 ?
+                <div className="dropdown-item" onClick={() => {  ipcRenderer.send('open-dev-tool'); }}>Open Dev Tool</div>
+                : ''
+              }
               <div className="dropdown-item" onClick={() => {  ipcRenderer.send('close-me'); }}>Quit Rubii</div>
             </div>
           </div>
