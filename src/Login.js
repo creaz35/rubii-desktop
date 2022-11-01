@@ -400,11 +400,11 @@ function Login() {
             }
             if(activeClient.start_subscription_period) {
               activeClient.worked_seconds = activeClient.worked_seconds + 15;
-              clients.map(function(client, i){
-                if(client.id == activeClient.id) {
-                  client.worked_seconds = client.worked_seconds + 15;
-                }
-              })
+              //clients.map(function(client, i){
+              //  if(client.id == activeClient.id) {
+              //    client.worked_seconds = client.worked_seconds + 15;
+              //  }
+              //})
             }
           } else {
             setActiveTaskTimer([]);
