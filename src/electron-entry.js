@@ -264,9 +264,9 @@ function createWindow() {
     win.loadURL(frameUrl, { "extraHeaders": "pragma: no-cache\n" });
 
     // http://localhost:3000
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 
-    //win.removeMenu(); // Brian
+    win.removeMenu(); // Brian
     // or set the Menu to null
     win.setMenu(null); // Brian
 
