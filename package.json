@@ -89,7 +89,7 @@
       "verifyUpdateCodeSignature": false,
       "rfc3161TimeStampServer": "http://timestamp.digicert.com",
       "certificateFile": "./omgd_limited.pfx",
-      "certificatePassword": "s]czfA&BZ0?Z7jr}"
+      "certificatePassword": "s]czfA&BZ0?Z7vr}"
     },
     "extends": null
   },

@@ -381,7 +381,8 @@ function Login() {
             user: userData,
             seconds: seconds,
             activity: activity,
-            newTimeFrame: 1
+            newTimeFrame: 1,
+            newTimeMinFrame: 1
           }
         })
         .then(result => {
@@ -437,10 +438,10 @@ function Login() {
         setActiveTaskTimer(activeTask);
         setActiveClientTimer(activeClient);
 
-        // Every 10 seconds to avoid overload
+        // Every 60 seconds to avoid overload
         setTimer(setInterval(() => {
-          setSeconds((current) => current + 5);
-        }, 5000));
+          setSeconds((current) => current + 15);
+        }, 15000));
 
         // Every seconds
         setTimerChild(setInterval(() => {

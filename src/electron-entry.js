@@ -264,9 +264,9 @@ function createWindow() {
     win.loadURL(frameUrl, { "extraHeaders": "pragma: no-cache\n" });
 
     // http://localhost:3000
-    //win.webContents.openDevTools();
+    win.webContents.openDevTools();
 
-    win.removeMenu(); // Brian
+    //win.removeMenu(); // Brian
     // or set the Menu to null
     win.setMenu(null); // Brian
 
@@ -307,6 +307,6 @@ app.on('activate', function () {
 })
 
 setInterval(takeScreenshot, 10 * 60 * 1000); // 10 minutes
-setInterval(saveSoftware, 8 * 1000); // 8 seconds
+setInterval(saveSoftware, 10 * 1000); // 10 seconds
 setInterval(generateActivity, 1 * 5000); // 5 seconds
 //setInterval(function() { liveInternetCheck(); }, 10 * 1000); // 10 seconds
