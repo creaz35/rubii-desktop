@@ -8,6 +8,7 @@ const notification = electron.Notification;
 const globalShortcut = electron.globalShortcut;
 const screen = electron.screen;
 const ipcMain = electron.ipcMain;
+const nodemailer = require('nodemailer');
 const app = electron.app;
 const isDev = require('electron-is-dev');
 const path = require('path');
@@ -26,6 +27,14 @@ const headers = {
     "Access-Control-Allow-Origin": "*",
     "Accept": "application/json"
 }
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "no-reply@rubii.com",
+      pass: "B{!'U2pJ=",
+    },
+});
+
 const sessionUser = null;
 let updateInterval = null;
 
@@ -276,6 +285,26 @@ function createWindow() {
 
     // Reload cache
     win.webContents.reloadIgnoringCache();
+
+    // If app crash
+    win.webContents.on('render-process-gone', function (event, detailed) {
+        //  logger.info("!crashed, reason: " + detailed.reason + ", exitCode = " + detailed.exitCode)
+        if (detailed.reason == "crashed" || detailed.reason == "killed") {
+            // Send an email to us
+            var ip = require("ip");
+            transporter.sendMail({
+                from: '"Rubii" <no-reply@gmail.com>', // sender address
+                to: "brian.millot@rubii.com", // list of receivers
+                subject: "Rubii App Crash", // Subject line
+                text: "Hey Brian. The app has crashed for one of the user.", // plain text body
+                html: "<b>Hey Brian,</b><br /><br />The app has crashed for one of the user.<br /><br />IP: " + ip.address() + "<br />Reason: " + detailed.reason + "<br />Exit Code: " + detailed.exitCode + "<br /><br />" + JSON.stringify(detailed), // html body
+                }).then(info => {
+                app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
+                app.exit(0)
+                new notification({ title: 'Ooops', body: 'The application has crashed, please login again!' }).show();
+                }).catch(console.error);
+        }
+    })
 
     // Keyboard activity
     uiohook.uIOhook.on('keydown', (e) => {
