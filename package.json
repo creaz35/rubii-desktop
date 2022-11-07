@@ -2,7 +2,7 @@
   "name": "rubii",
   "author": "Rubii",
   "description": "Rubii Desktop App",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "private": true,
   "main": "./src/electron-entry.js",
   "dependencies": {
@@ -90,8 +90,8 @@
       ],
       "verifyUpdateCodeSignature": false,
       "rfc3161TimeStampServer": "http://timestamp.digicert.com",
-      "certificateFile": "./omgd_limited.pfx",
-      "certificatePassword": "s]czfA&BZ0?Z7vr}"
+      "certificateFile": "./omgd_limited_brian.pfx",
+      "certificatePassword": "soczfA6BZ0uZ7vra"
     },
     "extends": null
   },

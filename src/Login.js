@@ -269,6 +269,8 @@ function Login() {
       event.preventDefault();
 
       setLoader(true);
+      setMainLoader(true);
+
       setErrorMessage('');
 
       axios({
@@ -315,14 +317,17 @@ function Login() {
               setNbrAccounts(0);
               setChoosenAccountId('');
             }
-          }
 
-          setLoader(false);
+            setLoader(false);
+            setMainLoader(false);
+
+          }
 
       })
       .catch(error => {
         setErrorMessage('Unexpected error, check your network');
         setLoader(false);
+        setMainLoader(false);
       })
 
     };

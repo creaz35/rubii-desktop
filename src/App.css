@@ -758,3 +758,8 @@ body {
 .hide-task {
   cusor: pointer;
 }
+
+button:disabled,
+button[disabled]{
+  opacity: 0.7;
+}
