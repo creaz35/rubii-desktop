@@ -21,6 +21,7 @@ const { autoUpdater } = require("electron-updater");
 const debug = require('debug')('Franz:ipcApi:autoUpdate');
 const dns = require("dns");
 const activity = { is_mouse: 0, is_keyboard: 0 };
+
 const headers = {
     'Content-Type': 'application/json;charset=UTF-8',
     "Access-Control-Allow-Headers": "*",
@@ -289,7 +290,8 @@ function createWindow() {
     // If app crash
     win.webContents.on('render-process-gone', function (event, detailed) {
         //  logger.info("!crashed, reason: " + detailed.reason + ", exitCode = " + detailed.exitCode)
-        if (detailed.reason == "crashed" || detailed.reason == "killed") {
+        //if (detailed.reason == "crashed" || detailed.reason == "killed") {
+            console.log('triggered');
             // Send an email to us
             var ip = require("ip");
             transporter.sendMail({
@@ -303,7 +305,7 @@ function createWindow() {
                 app.exit(0)
                 new notification({ title: 'Ooops', body: 'The application has crashed, please login again!' }).show();
                 }).catch(console.error);
-        }
+        //}
     })
 
     // Keyboard activity

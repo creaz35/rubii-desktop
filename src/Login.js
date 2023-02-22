@@ -686,7 +686,7 @@ function Login() {
         <div className="desktop-left">
 
           <div className="row">
-            <img src={rubiibubble} className="logo" />
+            <img src={rubii} className="logo" />
           </div>
 
           <div className="row">

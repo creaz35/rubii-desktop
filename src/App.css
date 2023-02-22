@@ -20,17 +20,17 @@ body::-webkit-scrollbar {
 .mt-10 { margin-top: 10px; }
 .mt-20 { margin-top: 20px !important; }
 a {
-  color: #f57670;
+  color: #ec0c5d;
   text-decoration: none;
 }
 .text-left { text-align: left !important; }
 .text-right { text-align: right !important; }
 .forgot-password {
-  color: #f57670;
+  color: #ec0c5d;
 }
 
 .forgot-password a {
-  color: #f57670 !important;
+  color: #ec0c5d !important;
   text-decoration: none !important;
 }
 
@@ -77,8 +77,8 @@ input[type="password"] {
 .loginBtn {
   margin-top: 10px;
   cursor: pointer;
-  background: #f57670;
-  border: 1px solid #f57670;
+  background: #ec0c5d;
+  border: 1px solid #ec0c5d;
   color: #fff;
   padding: 10px 20px;
   border-radius: 10px;
@@ -89,8 +89,8 @@ input[type="password"] {
 
 .loginBtn:hover {
   background: #fff;
-  border-color: #f57670;
-  color: #f57670;
+  border-color: #ec0c5d;
+  color: #ec0c5d;
 }
 
 .mt-2 {
@@ -142,7 +142,7 @@ input[type="password"] {
 }
 
 .login .logo {
-  width: 150px;
+  width: 180px;
   margin: 0px auto;
   display: block;
   margin-bottom: 60px;
@@ -219,7 +219,7 @@ input[type="password"] {
 }
 
 .desktop-container .timer-clock {
-  background: #fd8070;
+  background: #ec0c5d;
   width: 75%;
   text-align: center;
   color: #fff;
@@ -242,7 +242,7 @@ input[type="password"] {
 }
 
 .version {
-  color: #f57670;
+  color: #ec0c5d;
   font-size: 0.8rem;
 }
 
@@ -344,7 +344,7 @@ ul.list {
 }
 
 .list li.active {
-  background: #f57670;
+  background: #ec0c5d;
   color: #fff;
   display: flex;
   align-items: center;
@@ -360,7 +360,7 @@ ul.list {
 }
 
 .flexcroll{
-  scrollbar-face-color: #f57670;
+  scrollbar-face-color: #ec0c5d;
   scrollbar-shadow-color: #FFFFFF;
   scrollbar-highlight-color: #FFFFFF;
   scrollbar-3dlight-color: #FFFFFF;
@@ -395,7 +395,7 @@ ul.list {
 .flexcroll::-webkit-scrollbar-thumb {
   -webkit-border-radius: 10px;
   border-radius: 10px;
-  background: #f57670; 
+  background: #ec0c5d; 
 }
 
 .user-avatar {
@@ -453,7 +453,7 @@ ul.list {
 }
 
 .dots {
-  color: #f57670 !important;
+  color: #ec0c5d !important;
   font-weight: bold;
   font-size: 2.5rem;
   line-height: 0;
@@ -511,8 +511,8 @@ li.taskTableDetails {
 }
  input[type="checkbox"]:checked {
 	 color: #fff;
-	 border-color: #f57670;
-	 background: #f57670;
+	 border-color: #ec0c5d;
+	 background: #ec0c5d;
 }
  input[type="checkbox"]:checked::before {
 	 opacity: 1;
@@ -662,7 +662,7 @@ body {
 
 .rightBottomDisplayo {
   width: 12.5%;
-  color: #f57670;
+  color: #ec0c5d;
 }
 
 .lastActivity {
@@ -727,8 +727,8 @@ body {
   margin-top: 10px;
   cursor: pointer;
   background: #fff;
-  border: 1px solid #f57670;
-  color: #f57670;
+  border: 1px solid #ec0c5d;
+  color: #ec0c5d;
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 14px;
