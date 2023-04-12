@@ -219,16 +219,17 @@ input[type="password"] {
 }
 
 .desktop-container .timer-clock {
-  background: #ec0c5d;
+  background: #fff;
   width: 75%;
   text-align: center;
-  color: #fff;
+  color: #ec0c5d;
   margin: 0px auto;
   padding-top: 10px;
   padding-bottom: 10px;
-  font-weight: bold;
+  font-weight: normal;
   font-size: 1.5em;
   border-radius: 15px;
+  border: 1px solid #ec0c5d;
 }
 
 .inline-hidden {
@@ -242,17 +243,64 @@ input[type="password"] {
 }
 
 .version {
-  color: #ec0c5d;
+  color: #000;
   font-size: 0.8rem;
 }
 
 .timer-clock .icon {
   
 }
-
+.infobubble {
+  background-color: white;
+  display: inline-block;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  padding: 0px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 5px;
+  box-sizing: border-box;
+  border: 1px solid #ec0c5d;
+  color: #ec0c5d;
+  cursor: pointer;
+}
+.task-dropdown {
+  right: 10px;
+  width: auto;
+  text-align: left;
+  font-weight: normal;
+}
+.bubble-dropdown {
+  right: 10px;
+  width: 200px;
+  text-align: left;
+}
+.bubble-dropdown .titlebubble {
+  color: #ec0c5d;
+}
+.bubble-dropdown p {
+  margin: 0px;
+}
+.tasks-lister .table-date {
+  padding-left: 15px;
+}
+.tasks-lister .table-status {
+  padding-left: 0px;
+}
+.tasks-lister .table-due {
+  padding-right: 2px;
+}
+.tasks-lister .table-dots {
+  padding-right: 13px;
+}
 .project-task-showcase {
   text-align: center;
   margin: 0px auto;
+}
+.imgAvatar {
+  width: 155px;
+  margin-top: 30px;
 }
 
 .play {
@@ -314,10 +362,11 @@ input[type="password"] {
 
 .client-name {
   margin-bottom: 0px;
+  font-weight: normal;
 }
 
 .list-clients {
-  margin-top: 25px;
+  margin-top: 5px;
   background: #edeef2;
   padding-top: 15px;
   padding-bottom: 15px;
@@ -338,21 +387,19 @@ ul.list {
   padding-left: 15px;
   list-style-type: none;
   margin-left: 0px;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #ec0c5d;
   padding-top: 15px;
   padding-bottom: 15px;
 }
 
 .list li.active {
-  background: #ec0c5d;
-  color: #fff;
   display: flex;
   align-items: center;
 }
 
 .list li.activeClick {
-  background: #f0f4f7;
   color: #000;
+  font-weight: bold;
 }
 
 .list li:first-child {
@@ -360,7 +407,7 @@ ul.list {
 }
 
 .flexcroll{
-  scrollbar-face-color: #ec0c5d;
+  scrollbar-face-color: #bcbec0;
   scrollbar-shadow-color: #FFFFFF;
   scrollbar-highlight-color: #FFFFFF;
   scrollbar-3dlight-color: #FFFFFF;
@@ -386,16 +433,20 @@ ul.list {
 
 /* Track */
 .flexcroll::-webkit-scrollbar-track {
-  background: #e3e6f0;
+  background: #eeefef;
   -webkit-border-radius: 10px;
   border-radius: 10px;
+}
+ul.clients-display li {
+  padding-top: 10px;
+  border: none;
 }
 
 /* Handle */
 .flexcroll::-webkit-scrollbar-thumb {
   -webkit-border-radius: 10px;
   border-radius: 10px;
-  background: #ec0c5d; 
+  background: #bcbec0; 
 }
 
 .user-avatar {
@@ -430,6 +481,8 @@ ul.list {
   flex-direction: row !important;
   align-items: center;
   margin-bottom: 15px;
+  font-weight: bold;
+  color: #ec0c5d !important;
 }
 
 .tasks-lister .left {
@@ -449,7 +502,11 @@ ul.list {
 .desktop-container .search-bar-tasks {
   background: #edeef2;
   color: #000;
-  width: 220px;
+  width: 100%;
+}
+
+.search-client {
+  display: none !important;
 }
 
 .dots {
@@ -473,8 +530,8 @@ li.taskTableDetails {
   width: 25%;
 }
 .smallbtnblock {
-  width: auto;
-  padding-right: 15px;
+  width: 20px;
+  padding-right: 0px;
 }
 
 .smallbtnblockClient {
@@ -655,9 +712,15 @@ body {
 .leftBottomDisplay {
   width: 75%;
 }
-
+.leftBottomDisplay .block {
+  display: inline-block;
+}
+.due-mrg {
+  margin-left: 45px;
+}
 .rightBottomDisplay {
-  width: 12.5%;
+  width: 25%;
+  text-align: right;
 }
 
 .rightBottomDisplayo {
@@ -696,7 +759,7 @@ body {
   border-radius: 10px;
   font-size: 14px;
   color: rgb(139, 149, 158);
-  width: 235px;
+  width: 100%;
   height: 35px;
   margin-left: 15px;
 }
@@ -720,7 +783,7 @@ body {
 }
 
 .addFieldInput {
-  width: 235px !important;
+  width: calc(100% - 73px) !important;
 }
 
 .addTaskBtn {
@@ -732,34 +795,89 @@ body {
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 14px;
-  width: auto;
+  width: 15px;
   font-size: 21px;
   margin-left: 15px;
   font-weight: bold;
   margin-top: 0;
   display: inline-block;
+  text-align: center;
 }
 
 .addTask-row .left {
     width: 45%;
 }
+.addTask-row .addbox {
+  width: calc(25% + 40px);
+  padding-right: 25px;
+  padding-left: 0px;
+}
+.addTask-row .searchbox {
+  width: calc(25% - 12px);
+  padding-right: 5px;
+  padding-left: 5px;
+}
+.addTask-row .filterbox {
+  width: calc(25% - 12px);
+  padding-right: 5px;
+  padding-left: 5px;
+}
+.addTask-row .statusbox {
+  width: calc(25% - 12px);
+  padding-right: 5px;
+  padding-left: 5px;
+}
 .addTask-row .right {
   width: 55%;
 }
 
+.table-task {
+  width: 30%;
+  padding-left: 10px;
+}
+.table-date {
+  width: 20%;
+}
+.table-status {
+  width: 20%;
+}
+.table-due {
+  width: 20%;
+}
+.table-dots {
+  width: 10%;
+}
 .spinnerLoad {
   position: absolute;
   left: 50%;
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  width: 300px;
+}
+.spaceblock {
+ width: 20px;
+}
+li.taskTableDetails {
+  padding-left:0px;
+}
+li.taskTableDetails.active {
+  margin-left: 0px;
+}
+.hide-task {
+  cursor: pointer;
 }
 
-.hide-task {
-  cusor: pointer;
+.table-dots .dots {
+  cursor: pointer;
 }
 
 button:disabled,
 button[disabled]{
   opacity: 0.7;
+}
+
+.fixed-bottom-task {
+  padding-left: 0px;
+  padding-right: 6%;
 }

@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect }  from 'react';
-import loadingSpinner from './img/loading.gif';
+import loadingSpinner from './img/loader.gif';
 
 function Spinner() {
 

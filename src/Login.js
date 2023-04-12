@@ -27,6 +27,7 @@ function Login() {
 
     const [choosenAccountId, setChoosenAccountId] = useState('');
     const [choosenFilterTask, setChoosenFilterTask] = useState('nameaz');
+    const [choosenStatusTask, setChoosenStatusTask] = useState('all');
     const [nbrAccounts, setNbrAccounts] = useState(0);
     const [multipleAccounts, setMultipleAccounts] = useState([]);
     const [email, setEmail] = useState('');
@@ -51,6 +52,7 @@ function Login() {
     const [addToDoTask, setAddToDoTask] = useState("");
     const [completedTasks, setCompletedTasks] = useState(false); 
     const [hiddenTasks, setHiddenTasks] = useState(false); 
+    const [ongoingTasks, setOngoingTasks] = useState(false); 
     const [userData, setUserData] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [mainLoader, setMainLoader] = useState(false);
@@ -61,6 +63,23 @@ function Login() {
     // Dropdown
     const [isOpen, setOpen] = useState(false);
     const toggleDropdown = () => setOpen(!isOpen);
+    // Dropdown Info
+    const [isOpenInfo, setOpenInfo] = useState(false);
+    const toggleDropdownInfo = () => setOpenInfo(!isOpenInfo);
+    // Dropdown Task
+    const [isOpenTask, setOpenTask] = useState(false);
+    const toggleDropdownTask = () => setOpenTask(!isOpenTask);
+
+    const toggleDropdownTaskChecker = (task) => {
+      const updatedTasks = activeTasks.map((t) => {
+        if (t.id !== task.id) {
+          return { ...t, is_open_dropdown: false };
+        } else {
+          return { ...t, is_open_dropdown: !t.is_open_dropdown };
+        }
+      });
+      setActiveTasks(updatedTasks);
+    };
 
     // Retry up to 5 times with a 5 seconds delay
     //  retryCondition: axiosRetry.isRetryableError
@@ -168,6 +187,25 @@ function Login() {
       setActiveTasks(sortedTasks);
     };
 
+    const chooseStatusFilter = (value) => {
+      new Audio(audio).play();
+      setChoosenStatusTask(value);
+
+      // Reset
+      setCompletedTasks(false);
+      setHiddenTasks(false);
+      setOngoingTasks(false);
+
+      if(value === 'completed') {
+        setCompletedTasks(!completedTasks);
+      } else if(value === 'hidden') {
+        setHiddenTasks(!hiddenTasks);
+      } else if(value === 'ongoing') {
+        setOngoingTasks(!ongoingTasks);
+      }
+
+    };
+
     const generateObjTaskFilter = (newObject, value) => {
       if(value == 'nameza') {
         newObject.sort((a, b) => (a.strtolower_name < b.strtolower_name) ? 1 : -1);
@@ -182,23 +220,153 @@ function Login() {
       return newObject;
     };
 
+    const deleteTask = () => {
+
+      // Display a confirmation dialog box
+      if (!window.confirm('Are you sure you want to delete this task?')) {
+        return;
+      }
+
+      new Audio(audio).play();
+
+      const newObj = { ...activeTask, is_deleted: true };
+      setActiveTask(newObj);
+
+      // Client Tasks
+      activeClient.tasks.map(function(item, i){
+        if(item.id == activeTask.id) {
+            item.is_deleted = true;
+        }
+      })
+
+      // Clients
+      clients.map(function(client, i){
+        clients.map(function(item, t){
+          if(item.id == activeTask.id) {
+            item.is_deleted = true;
+          }
+        })
+      })
+      
+      axios({
+        method: "POST",
+        url: process.env.REACT_APP_API_URL + '/desktop/delete_task',
+        headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
+        data: {
+          task: activeTask,
+          user: userData
+        }
+      }).then(result => {
+        //console.log(result.data.json);
+      })
+      .catch(error => {
+        setErrorMessage('Unexpected error');
+      })
+
+      const updatedTasks = activeTasks.map((t) => {
+        if (t.id === activeTask.id) {
+          return { ...t, is_open_dropdown: false, is_deleted: true };
+        } else {
+          return { ...t, is_open_dropdown: false };
+        }
+      });
+
+      setActiveTasks(updatedTasks);
+      setActiveTask([]); 
+
+    };
+
+    const openTrelloLink = (url) => {
+      shell.openExternal(url);
+      const updatedTasks = activeTasks.map((t) => {
+        return { ...t, is_open_dropdown: false };
+      });
+      setActiveTasks(updatedTasks);;
+    };
+
+    const completedTask = () => {
+
+      new Audio(audio).play();
+
+      if(activeTask.is_completed == true) {
+        var is_completed_d = false;
+        var is_completed_d_txt = 'Ongoing';
+      } else {
+        var is_completed_d = true;
+        var is_completed_d_txt = 'Completed';
+      }
+
+      const newObj = { ...activeTask, is_completed: is_completed_d, status_txt: is_completed_d_txt };
+      setActiveTask(newObj);
+
+      // Client Tasks
+      activeClient.tasks.map(function(item, i){
+        if(item.id == activeTask.id) {
+            item.is_completed = is_completed_d;
+            item.status_txt = is_completed_d_txt;
+        }
+      })
+
+      // Clients
+      clients.map(function(client, i){
+        clients.map(function(item, t){
+          if(item.id == activeTask.id) {
+              item.is_completed = is_completed_d;
+              item.status_txt = is_completed_d_txt;
+          }
+        })
+      })
+      
+      axios({
+        method: "POST",
+        url: process.env.REACT_APP_API_URL + '/desktop/set_completed_task',
+        headers: { 'Content-Type': 'application/json;charset=UTF-8', "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Accept": "application/json" },
+        data: {
+          task: activeTask,
+          user: userData
+        }
+      }).then(result => {
+        //console.log(result.data.json);
+      })
+      .catch(error => {
+        setErrorMessage('Unexpected error');
+      })
+
+      const updatedTasks = activeTasks.map((t) => {
+        if (t.id === activeTask.id) {
+          return { ...t, is_open_dropdown: false, is_completed: is_completed_d, status_txt: is_completed_d_txt };
+        } else {
+          return { ...t, is_open_dropdown: false };
+        }
+      });
+      
+      setActiveTasks(updatedTasks);
+      setActiveTask([]); 
+
+    };
+
     const hideTask = () => {
 
       new Audio(audio).play();
 
       if(activeTask.hidden == true) {
+        console.log('we unhide it')
         var is_hidden = false;
+        var status_txt = 'Ongoing';
       } else {
+        console.log('we hide it')
         var is_hidden = true;
+        var status_txt = 'Hidden';
       }
 
-      const newObj = { ...activeTask, hidden: is_hidden };
+      const newObj = { ...activeTask, hidden: is_hidden, status_txt: status_txt };
       setActiveTask(newObj);
 
       // Client Tasks
       activeClient.tasks.map(function(item, i){
         if(item.id == activeTask.id) {
             item.hidden = is_hidden;
+            item.status_txt = status_txt;
         }
       })
 
@@ -207,6 +375,7 @@ function Login() {
         clients.map(function(item, t){
           if(item.id == activeTask.id) {
               item.hidden = is_hidden;
+              item.status_txt = status_txt;
           }
         })
       })
@@ -225,6 +394,18 @@ function Login() {
       .catch(error => {
         setErrorMessage('Unexpected error');
       })
+
+      const updatedTasks = activeTasks.map((t) => {
+        if (t.id === activeTask.id) {
+          return { ...t, is_open_dropdown: false, hidden: is_hidden, status_txt: status_txt };
+        } else {
+          return { ...t, is_open_dropdown: false };
+        }
+      });
+      
+      setActiveTasks(updatedTasks);
+      // Reset
+      setActiveTask([]);
 
     };
 
@@ -520,6 +701,10 @@ function Login() {
         var value = hours + ' hours and ' + minutes + ' minutes';
       }
 
+      if (isNaN(hours) || isNaN(minutes)) {
+        value = 'No time tracked yet for this current cycle';
+      } 
+
       return value;
 
     }
@@ -591,22 +776,23 @@ function Login() {
       ); 
     }); 
 
-    const filterTask = ({ name, dueComplete, hidden }) => {
-      if(completedTasks && !hiddenTasks) {
-        if(completedTasks == dueComplete) {
+    const filterTask = ({ name, dueComplete, hidden, is_deleted, is_completed, status_txt }) => {
+      if (is_deleted) {
+        return null;
+      } else if(hiddenTasks) {
+        if(status_txt == 'Hidden') {
           return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
         }
-      } else if(hiddenTasks && !completedTasks) {
-        if(hiddenTasks == hidden) {
+      } else if(completedTasks) {
+        if(status_txt == 'Completed') {
           return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
         }
-      } else if(hiddenTasks && completedTasks) {
-        if(hiddenTasks == hidden && completedTasks == dueComplete) {
+      } else if(ongoingTasks) {
+        if(status_txt == 'Ongoing') {
           return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
         }
       } else {
-        // We do not show hidden tasks
-        if(hidden != true) {
+        if(status_txt != 'Hidden') {
           return name.toLowerCase().indexOf(searchValueTask.toLowerCase()) !== -1;
         }
       }
@@ -616,29 +802,72 @@ function Login() {
     const listTasks = activeTasks.filter(filterTask).map(function(task, index) {
       return (
         <li key={index} onClick={() => chooseTask(task)} className={activeTaskTimer.id === task.id ? "taskTableDetails active" : (activeTask.id === task.id ? "taskTableDetails activeClick" : "taskTableDetails")}> 
-          {activeTaskTimer.id === task.id &&<span className="smallbtnblock"> <img src={smallpause} className="play-sm" onClick={handleStartToggle} /> </span>}<span className="left-task">{task.name}<br /> {toHHMMSS(task.seconds_tracked)}</span> <span className="right-task">{task.due_formated_desktop}</span>
+          {activeTaskTimer.id === task.id ? (
+  <span className="smallbtnblock">
+    <img src={smallpause} className="play-sm" onClick={handleStartToggle} />
+  </span>
+) : (
+  <span className="spaceblock"></span>
+)}
+          <span className="table-task">{task.name}<br /> {toHHMMSS(task.seconds_tracked)}</span> 
+          <span className="table-date">{task.dateLastActivityFormat}</span>
+          <span className="table-status">{task.status_txt}</span>
+          <span className="table-due">{task.due_formated_desktop}</span>
+          <span className="table-dots">
+            <span className="dots" onClick={() => toggleDropdownTaskChecker(task)}>...</span>
+
+            <div className={`dropdown-body task-dropdown ${task.is_open_dropdown && 'open'}`}>
+              <div className="dropdown-item">
+                <span onClick={() => hideTask()}>
+                  {!task.hidden ? 
+                      'Hide Task'
+                  : 'Unhide Task'}
+                </span>
+              </div>
+              <div className="dropdown-item">
+                <span onClick={() => completedTask()}>
+                {task.status_txt === 'Completed' ? 
+                    'Set as Ongoing' :
+                    'Set as Completed'
+                }
+                </span>
+              </div>
+              {task.url ? 
+                <div className="dropdown-item">   
+                  <span onClick={() => openTrelloLink(task.url)}>Open</span>
+                </div>
+               : ''}
+              <div className="dropdown-item">
+                <span onClick={() => deleteTask()}>
+                  Delete Task
+                </span>
+              </div>
+            </div>
+
+          </span>
         </li>
       ); 
     }); 
-
-    const handleShowCompleted = () => { 
-      setCompletedTasks(!completedTasks);
-    };
-
-    const handleShowHidden = () => { 
-      setHiddenTasks(!hiddenTasks);
-    };
 
     const showTasksClient = (
       <div>
         {listTasks.length > 0 ?
         <div>
           <div className="row tasks-lister">
-            <div className="left">
+            <div className="table-task">
               <span>Tasks</span>
             </div>
-            <div className="right">
+            <div className="table-date">
+              <span>Date Created</span>
+            </div>
+            <div className="table-status">
+              <span>Status</span>
+            </div>
+            <div className="table-due">
               <span>Due</span>
+            </div>
+            <div className="table-dots">
+              <span></span>
             </div>
           </div>
           <div className="flexcroll flexcroll-mini2">
@@ -697,14 +926,64 @@ function Login() {
 
           <div className="row project-task-showcase">
 
-            {timer && <div><h2 className="client-name"> {activeClientTimer.name}</h2>{activeClientTimer.start_subscription_period ? <p>Billing Cycle: {activeClientTimer.start_subscription_period} - {activeClientTimer.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month<br />{formatHoursWorked(activeClient.worked_seconds)}</p>: ''}<p className="task-name">{activeTaskTimer.name}</p></div>}
-            {!timer && <div><h2 className="client-name"> {activeClient.name}</h2>{activeClient.start_subscription_period ? <p>{activeClient.start_subscription_period} - {activeClient.end_subscription_period}<br />Up to {activeClient.max_cap} hours / month<br />{formatHoursWorked(activeClient.worked_seconds)}</p>: ''}<p className="task-name">{activeTask.name}</p></div>}
+          {activeClient.avatar_url && activeClient.avatar_url.indexOf('default_avatar') === -1 && (
+            <img src={activeClient.avatar_url} className="imgAvatar" />
+          )}
+
+            {timer && <div><h2 className="client-name"> {activeClientTimer.name}<span className="infobubble" onClick={toggleDropdownInfo}>i</span></h2></div>}
+            {!timer && <div><h2 className="client-name"> {activeClient.name} <span className="infobubble" onClick={toggleDropdownInfo}>i</span></h2></div>}
+
+            <div className={`dropdown-body bubble-dropdown ${isOpenInfo && 'open'}`}>
+              <div className="dropdown-item">
+                {timer && (
+                  <div>
+                    {activeClientTimer.start_subscription_period ? (
+                      <span>
+                        <span className="titlebubble">Billing Cycle</span><br />
+                        {activeClientTimer.start_subscription_period} - {activeClientTimer.end_subscription_period}<br /><br />
+                        <span className="titlebubble">Monthly Allocated Hours</span><br />
+                        Up to {activeClientTimer.max_cap} hours / month<br /><br />
+                        <span className="titlebubble">Worked Hours</span><br />
+                        {formatHoursWorked(activeClientTimer.worked_seconds)}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="titlebubble">Monthly Worked Hours</span><br />
+                        {formatHoursWorked(activeClientTimer.worked_seconds)}
+                      </>
+                    )}
+                    <br /><br />
+                    <span className="titlebubble">Active Task</span><br />
+                    <p className="task-name">{activeTaskTimer.name}</p>
+                  </div>
+                )}
+                {!timer && (
+                  <div>
+                    {activeClient.start_subscription_period ? (
+                      <p>
+                        <span className="titlebubble">Billing Cycle</span><br />
+                        {activeClient.start_subscription_period} - {activeClient.end_subscription_period}<br /><br />
+                        <span className="titlebubble">Monthly Allocated Hours</span><br />
+                        Up to {activeClient.max_cap} hours / month<br /><br />
+                        <span className="titlebubble">Worked Hours</span><br />
+                        {formatHoursWorked(activeClient.worked_seconds)}
+                      </p>
+                    ) : (
+                      <>
+                        <span className="titlebubble">Monthly Worked Hours</span><br />
+                        {formatHoursWorked(activeClient.worked_seconds)}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
 
             {timer && <img src={pause} className="play" onClick={handleStartToggle} />}
             {!timer && <img src={play} className="play" onClick={handleStartToggle} />}
           </div>
 
-          <div className="row project-task-showcase-search">
+          <div className="row project-task-showcase-search search-client">
             <input type="text" value={searchValueClient} onChange={e => setSearchValueClient(e.target.value)} className="search-bar" placeholder="Search Clients"/>
           </div>
 
@@ -714,7 +993,7 @@ function Login() {
 
           <div className="flexcroll flexcroll-mini">
             <div className="row">
-                <ul className="list">
+                <ul className="list clients-display">
                   {listClients}
                 </ul>
             </div>
@@ -744,38 +1023,30 @@ function Login() {
               <p className="task-name">{activeClient.name}</p>
             </div>
 
-            <div className="row right-task-entry">
-              <div className="left">
-                
-                <div className="inline-completed">
-                  <input type="checkbox" id="showCompleted" onChange={handleShowCompleted} />
-                  <label className="checkbox" htmlFor="showCompleted">Show Completed</label>
-                </div>
-
-                <div className="inline-hidden">
-                  <input type="checkbox" id="showHidden" onChange={handleShowHidden} />
-                  <label className="checkbox" htmlFor="showHidden">Show Hidden</label>
-                </div>
-
-              </div>
-              <div className="right text-right">
-                <input type="text" value={searchValueTask} onChange={e => setSearchValueTask(e.target.value)}  className="search-bar-tasks" placeholder="Search Tasks"/>
-              </div>
-            </div>
-
             <div className="row addTask-row">
-              <div className="left">
+              <div className="addbox">
                 <input type="text" className="bar addFieldInput" value={addToDoTask || ""} required placeholder="Add Task" onChange={e => setAddToDoTask(e.target.value)}/>
                 <div className="addTaskBtn" onClick={addTask} disabled={loaderAddTask}>
                   +
                 </div>
               </div>
-              <div className="right text-right">
+              <div className="searchbox text-right">
+                <input type="text" value={searchValueTask} onChange={e => setSearchValueTask(e.target.value)}  className="search-bar-tasks" placeholder="Search Tasks"/>
+              </div>
+              <div className="filterbox text-right">
                 <select className="selectFilterOption" value={choosenFilterTask} onChange={e => chooseTaskFilter(e.target.value)}>
                   <option value="nameaz">By Name (A-Z)</option>
                   <option value="nameza">By Name (Z-A)</option>
                   <option value="dueasc">By Due Date (ASC)</option>
                   <option value="duedesc">By Due Date (DESC)</option>
+                </select>
+              </div>
+              <div className="statusbox text-right">
+                <select className="selectFilterOption" value={choosenStatusTask} onChange={e => chooseStatusFilter(e.target.value)}>
+                  <option value="all">All Tasks</option>
+                  <option value="ongoing">Ongoing Tasks</option>
+                  <option value="completed">Completed Tasks</option>
+                  <option value="hidden">Hidden Tasks</option>
                 </select>
               </div>
             </div>
@@ -787,27 +1058,16 @@ function Login() {
                     <div className="fixed-bottom-task">
                       <div className="flex-display">
                         <div className="leftBottomDisplay">
-                          <p><strong>{activeTask.name}</strong></p>
-                          <p>({activeTask.identificator})</p>
-                          <span className="lastActivity">{activeTask.dateLastActivityFormat}</span><br /><br />
+                          <div className="block">
+                            <strong>{activeTask.name}</strong>
+                          </div>
+                          <div className="block due-mrg">
+                            <span>Due: {activeTask.dateLastActivityFormat}</span>
+                          </div>
                         </div>
                         <div className="rightBottomDisplay">
                           <p><strong>{activeTask.status_txt}</strong></p>
                         </div>
-                        <div className="rightBottomDisplay">
-                          <a onClick={() => hideTask()} className="hide-task">
-                            <strong>
-                            {!activeTask.hidden ? 
-                                'Hide Task'
-                            : 'Unhide Task'}
-                              </strong>
-                          </a>
-                        </div>
-                        {activeTask.url ? 
-                        <div className="rightBottomDisplayo">
-                          <p className="cursor-pointer" onClick={() => { shell.openExternal(activeTask.url); }}><strong>Open Task</strong></p>
-                        </div>
-                        : ''}
                       </div>
                     {activeTask.desc ? <div dangerouslySetInnerHTML={{__html: activeTask.desc_for_html}}/>: 'No description'}</div>
                 </div>
