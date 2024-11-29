@@ -606,6 +606,10 @@ function Login() {
             };
             sessionStorage.setItem('timer', JSON.stringify(timerDataSession));
             alert(result.data.json.message);
+            speak({
+              text: result.data.json.message,
+              voice: voices[1],
+            });
           }
         })
         .catch((error) => {
@@ -624,6 +628,16 @@ function Login() {
     }, [seconds, userData]);
 
     const handleStartToggle = (seconds) => {
+
+      if(activeClient.is_locked_monthly_cap && activeClient.is_locked_monthly_cap == 1) {
+        speak({
+          text: activeClient.is_locked_monthly_cap_message,
+          voice: voices[1],
+        });
+        alert(activeClient.is_locked_monthly_cap_message);
+        return false;
+      }
+
       // Start new timer only if it's not run yet
       if(!timer && activeTask.id) {
 
@@ -932,6 +946,8 @@ function Login() {
 
             {timer && <div><h2 className="client-name"> {activeClientTimer.name}<span className="infobubble" onClick={toggleDropdownInfo}>i</span></h2></div>}
             {!timer && <div><h2 className="client-name"> {activeClient.name} <span className="infobubble" onClick={toggleDropdownInfo}>i</span></h2></div>}
+
+            {activeClient.is_locked_monthly_cap == 1 && <div><h2 className="plan-reached"> Monthly Cap Reached</h2></div>}
 
             <div className={`dropdown-body bubble-dropdown ${isOpenInfo && 'open'}`}>
               <div className="dropdown-item">

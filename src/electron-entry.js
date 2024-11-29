@@ -52,7 +52,7 @@ if (process.platform === 'win32')
 let apiEndpoint = 'https://rubii.com/api'; // By default, we are in production
 let frameUrl = 'https://desktop.rubii.com';
 
-//apiEndpoint = "http://creaz:81/xorix/api"; // Brian
+//apiEndpoint = "http://creaz:81/rubii/api"; // Brian
 //frameUrl = 'http://localhost:3000'; // Brian
 
 //if (isDev) { // or if(process.env.NODE_ENV)

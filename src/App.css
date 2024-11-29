@@ -858,6 +858,10 @@ body {
 .spaceblock {
  width: 20px;
 }
+.plan-reached {
+  color: red;
+  font-size: 14px;
+}
 li.taskTableDetails {
   padding-left:0px;
 }

@@ -9,6 +9,8 @@ cd rubii-desktop
 # install npm dependencies
 npm install
 
+# Use Node 16.20.21, nvm list, nvm use 16.20.1
+
 # run create-react-app `webpack-dev-server`
 npm start
 
