@@ -20,8 +20,7 @@ npm run start-electron
 
 ## Push to the web server
 
-npm run dist
-npm run build-react
+Git pull then npm run build-react
 
 to create an executable DMG or EXE file
 ```
